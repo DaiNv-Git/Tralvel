@@ -50,7 +50,7 @@ jobs:
           source: target/TravelStride-0.0.1-SNAPSHOT.jar
           target: /root/travel/Tralvel/target/
 
-      - name: SSH pull latest code on VPS (if needed) and restart app
+      - name: SSH pull latest code on VPS (if needed) and restart app (run in background)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -67,10 +67,9 @@ jobs:
               fi
             fi
 
-            echo "== Deploy new JAR =="
-            cd /root/travel/Tralvel/target/
-            ls -lh TravelStride-0.0.1-SNAPSHOT.jar
+            echo "== Kill old app if running =="
+            pkill -f 'java -jar TravelStride-0.0.1-SNAPSHOT.jar' || true
 
-            echo "== Restart PM2 App =="
-            pm2 delete travel-app || true
-            pm2 start java --name travel-app -- -jar TravelStride-0.0.1-SNAPSHOT.jar --server.port=8080
+            echo "== Start app in background with nohup =="
+            cd /root/travel/Tralvel/target/
+            nohup java -jar TravelStride-0.0.1-SNAPSHOT.jar --server.port=8080 > app.log 2>&1 &
