@@ -34,9 +34,9 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            mkdir -p /root/travel/Tralvel/backup/
-            if [ -f /root/travel/Tralvel/target/TravelStride-0.0.1-SNAPSHOT.jar ]; then
-              cp /root/travel/Tralvel/target/TravelStride-0.0.1-SNAPSHOT.jar /root/travel/Tralvel/backup/TravelStride-$(date +"%Y%m%d%H%M%S").jar
+            mkdir -p /travel/Tralvel/backup/
+            if [ -f /travel/Tralvel/target/TravelStride-0.0.1-SNAPSHOT.jar ]; then
+              cp /travel/Tralvel/target/TravelStride-0.0.1-SNAPSHOT.jar /travel/Tralvel/backup/TravelStride-$(date +"%Y%m%d%H%M%S").jar
               echo "Backup completed!"
             fi
 
@@ -48,7 +48,7 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           password: ${{ secrets.SERVER_PASSWORD }}
           source: target/TravelStride-0.0.1-SNAPSHOT.jar
-          target: /root/travel/Tralvel/target/
+          target: /travel/Tralvel/target/
 
       - name: SSH pull latest code on VPS (if needed) and restart app
         uses: appleboy/ssh-action@v1.0.3
@@ -60,15 +60,15 @@ jobs:
           script: |
             export PATH=$PATH:/usr/local/bin
             echo "== Pull latest code if git folder exists =="
-            if [ -d /root/travel/Tralvel ]; then
-              cd /root/travel/Tralvel
+            if [ -d /travel/Tralvel ]; then
+              cd /travel/Tralvel
               if [ -d .git ]; then
                 git pull origin main || true
               fi
             fi
 
             echo "== Deploy new JAR =="
-            cd /root/travel/Tralvel/target/
+            cd /travel/Tralvel/target/
             ls -lh TravelStride-0.0.1-SNAPSHOT.jar
 
             echo "== Restart PM2 App =="
