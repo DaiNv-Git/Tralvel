@@ -5,28 +5,11 @@ on:
     branches: [ main, dev ]
 
 jobs:
-  build-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v3
-
-      - name: Setup Java 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Build with Maven (clean & update)
-        run: mvn clean package -U -DskipTests
-
-      - name: Check built JAR
-        run: |
-          ls -lh target/TravelStride-0.0.1-SNAPSHOT.jar
-          file target/TravelStride-0.0.1-SNAPSHOT.jar
-
-      - name: Backup old JAR on VPS (for rollback)
+      - name: SSH into VPS, pull code, build and restart
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -34,33 +17,22 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            mkdir -p /root/travel/Tralvel/backup/
-            if [ -f /root/travel/Tralvel/target/TravelStride-0.0.1-SNAPSHOT.jar ]; then
-              cp /root/travel/Tralvel/target/TravelStride-0.0.1-SNAPSHOT.jar /root/travel/Tralvel/backup/TravelStride-$(date +"%Y%m%d%H%M%S").jar
-              echo "✅ Backup completed!"
+            cd /root/travel/Tralvel
+
+            echo "== Pull latest code =="
+            git pull origin main
+
+            echo "== Build new JAR =="
+            mvn clean package -U -DskipTests
+
+            echo "== Backup old JAR =="
+            mkdir -p backup
+            if [ -f target/TravelStride-0.0.1-SNAPSHOT.jar ]; then
+              cp target/TravelStride-0.0.1-SNAPSHOT.jar backup/TravelStride-$(date +"%Y%m%d%H%M%S").jar
             fi
 
-      - name: Deploy new JAR to VPS
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          port: ${{ secrets.SERVER_SSH_PORT }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          source: target/TravelStride-0.0.1-SNAPSHOT.jar
-          target: /root/travel/Tralvel/target/
-
-      - name: Restart App on VPS
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          port: ${{ secrets.SERVER_SSH_PORT }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          script: |
-            echo "== Restart App =="
-            cd /root/travel/Tralvel/target/
-            ls -lh TravelStride-0.0.1-SNAPSHOT.jar
+            echo "== Restart PM2 app =="
+            cd target/
             pm2 delete travel-app || true
             pm2 start java --name travel-app -- -jar TravelStride-0.0.1-SNAPSHOT.jar --server.port=8080
 
@@ -68,5 +40,5 @@ jobs:
         run: |
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="✅ TravelStride CI/CD Deploy Success on *${{ github.ref_name }}* branch 🚀" \
+          -d text="✅ TravelStride CI/CD Build & Deploy thành công trên *${{ github.ref_name }}* 🚀" \
           -d parse_mode=Markdown
