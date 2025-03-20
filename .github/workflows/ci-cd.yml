@@ -39,7 +39,9 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            cd /***/travel/Tralvel/target/
-            /usr/local/bin/pm2 delete travel-app || true
-            /usr/local/bin/pm2 start java --name travel-app -- -jar TravelStride-0.0.1-SNAPSHOT.jar --server.port=8080
+            export PATH=$PATH:/usr/local/bin
+            cd /root/travel/Tralvel/target/
+            pm2 delete travel-app || true
+            pm2 start java --name travel-app -- -jar TravelStride-0.0.1-SNAPSHOT.jar --server.port=8080
+          
           
