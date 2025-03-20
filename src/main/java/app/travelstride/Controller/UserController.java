@@ -19,6 +19,10 @@ public class UserController {
     public ResponseEntity<User> createUser(@RequestBody User user) {
         return ResponseEntity.ok(userRepository.save(user));
     }
+    @PostMapping("/create1")
+    public ResponseEntity<User> createUser1(@RequestBody User user) {
+        return ResponseEntity.ok(userRepository.save(user));
+    }
 
     // Update user
     @PutMapping("/update/{id}")
