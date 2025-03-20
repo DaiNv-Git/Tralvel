@@ -2,7 +2,7 @@ name: TravelStride CI/CD
 
 on:
   push:
-    branches: [ main, dev ]  # Thêm dev nếu cần test
+    branches: [ main, dev ]
 
 jobs:
   build-deploy:
@@ -26,6 +26,20 @@ jobs:
           ls -lh target/TravelStride-0.0.1-SNAPSHOT.jar
           file target/TravelStride-0.0.1-SNAPSHOT.jar
 
+      - name: Backup old JAR on VPS (for rollback)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            mkdir -p /root/travel/Tralvel/backup/
+            if [ -f /root/travel/Tralvel/target/TravelStride-0.0.1-SNAPSHOT.jar ]; then
+              cp /root/travel/Tralvel/target/TravelStride-0.0.1-SNAPSHOT.jar /root/travel/Tralvel/backup/TravelStride-$(date +"%Y%m%d%H%M%S").jar
+              echo "Backup completed!"
+            fi
+
       - name: Deploy JAR to VPS using password
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -36,7 +50,7 @@ jobs:
           source: target/TravelStride-0.0.1-SNAPSHOT.jar
           target: /root/travel/Tralvel/target/
 
-      - name: SSH restart app using password + check jar time
+      - name: SSH pull latest code on VPS (if needed) and restart app
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -45,9 +59,18 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             export PATH=$PATH:/usr/local/bin
+            echo "== Pull latest code if git folder exists =="
+            if [ -d /root/travel/Tralvel ]; then
+              cd /root/travel/Tralvel
+              if [ -d .git ]; then
+                git pull origin main || true
+              fi
+            fi
+
+            echo "== Deploy new JAR =="
             cd /root/travel/Tralvel/target/
-            echo "==== JAR file info ===="
             ls -lh TravelStride-0.0.1-SNAPSHOT.jar
-            echo "======================="
+
+            echo "== Restart PM2 App =="
             pm2 delete travel-app || true
             pm2 start java --name travel-app -- -jar TravelStride-0.0.1-SNAPSHOT.jar --server.port=8080
