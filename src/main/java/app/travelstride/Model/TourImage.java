@@ -13,6 +13,7 @@ public class TourImage {
 
     private Long tourId;  // khóa ngoại, mapping tay
 
-    private String imageUrl;
-    private Boolean isCover = false;
+    private String url;
+
+    private Boolean isVideo = false;
 }
