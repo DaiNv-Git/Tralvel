@@ -13,7 +13,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")  // Áp dụng cho tất cả endpoint
                 .allowedOrigins("*")  // React/Vue domain gọi lên
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true);  // Nếu cần gửi cookie
+                .allowedHeaders("*");
     }
 }
