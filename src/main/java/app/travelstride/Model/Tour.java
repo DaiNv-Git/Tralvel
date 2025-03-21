@@ -3,6 +3,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "tour")
 @Getter
@@ -170,6 +172,28 @@ public class Tour {
     }
 
     public void setDestinations(String destinations) {
+        this.destinations = destinations;
+    }
+
+    public Tour() {
+    }
+
+    public Tour(Long id, String tripId, String name, String lodgingLevel, String tripType, String physicalLevel, String tripPace, String highlights, String tripAbout, String itineraryFocus, String groupSize, String ageRange, Integer minGroupSize, Integer maxGroupSize, String attractions, String destinations) {
+        this.id = id;
+        this.tripId = tripId;
+        this.name = name;
+        this.lodgingLevel = lodgingLevel;
+        this.tripType = tripType;
+        this.physicalLevel = physicalLevel;
+        this.tripPace = tripPace;
+        this.highlights = highlights;
+        this.tripAbout = tripAbout;
+        this.itineraryFocus = itineraryFocus;
+        this.groupSize = groupSize;
+        this.ageRange = ageRange;
+        this.minGroupSize = minGroupSize;
+        this.maxGroupSize = maxGroupSize;
+        this.attractions = attractions;
         this.destinations = destinations;
     }
 }
