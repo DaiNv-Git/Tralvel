@@ -16,4 +16,36 @@ public class TourImage {
     private String url;
 
     private Boolean isVideo = false;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getTourId() {
+        return tourId;
+    }
+
+    public void setTourId(Long tourId) {
+        this.tourId = tourId;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Boolean getVideo() {
+        return isVideo;
+    }
+
+    public void setVideo(Boolean video) {
+        isVideo = video;
+    }
 }

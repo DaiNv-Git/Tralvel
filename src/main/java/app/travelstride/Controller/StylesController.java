@@ -60,7 +60,7 @@ public class StylesController {
             Path filePath = Paths.get(uploadDir, fileName);
             Files.write(filePath, file.getBytes());
 
-            // Tạo đường dẫn ảnh (FE gọi localhost:8080/images/xxx.jpg)
+
             String imageUrl = "/images/" + fileName;
 
             // Lưu vào DB
