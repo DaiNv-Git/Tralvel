@@ -44,6 +44,8 @@ public class TripRequest {
     @Lob
     private String description;
 
+    private String concurrent;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public enum DateType {
