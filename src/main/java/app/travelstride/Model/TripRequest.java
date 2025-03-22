@@ -50,6 +50,30 @@ public class TripRequest {
         exact, approximate, decide_later
     }
 
+    public String getWhenDate() {
+        return whenDate;
+    }
+
+    public void setWhenDate(String whenDate) {
+        this.whenDate = whenDate;
+    }
+
+    public String getTotalDate() {
+        return totalDate;
+    }
+
+    public void setTotalDate(String totalDate) {
+        this.totalDate = totalDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public enum BudgetStrictness {
         strict, flexible
     }
