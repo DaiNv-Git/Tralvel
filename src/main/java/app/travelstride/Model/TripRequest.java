@@ -14,7 +14,6 @@ public class TripRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String homeCountry;
     private String mainCountry;
     private String additionalCountries;
@@ -47,6 +46,7 @@ public class TripRequest {
     private String concurrent;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+
 
     public String getConcurrent() {
         return concurrent;
