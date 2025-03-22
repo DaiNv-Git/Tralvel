@@ -7,6 +7,16 @@ public class DestinationDTO {
     private String destination;
     private Long continentId;
 
+    private String imageUrl;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public String getDestination() {
         return destination;
     }

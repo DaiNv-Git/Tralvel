@@ -11,11 +11,10 @@ public class TourImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long tourId;  // khóa ngoại, mapping tay
+    private Long tourId;  
 
     private String url;
-
-    private Boolean isVideo = false;
+    
 
     public Long getId() {
         return id;
@@ -40,12 +39,5 @@ public class TourImage {
     public void setUrl(String url) {
         this.url = url;
     }
-
-    public Boolean getVideo() {
-        return isVideo;
-    }
-
-    public void setVideo(Boolean video) {
-        isVideo = video;
-    }
+    
 }

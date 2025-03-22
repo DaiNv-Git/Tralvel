@@ -17,6 +17,15 @@ public class Continents {
 
     @Column(name = "ContinentName")
     private String continentName;
+    private String imageUrl;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     public Long getContinentId() {
         return continentId;

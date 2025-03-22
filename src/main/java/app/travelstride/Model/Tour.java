@@ -19,6 +19,10 @@ public class Tour {
     private String name;
 
     private String lodgingLevel;
+    
+    private String video;
+    
+    private int  totalDay;
 
     private String tripType;
 
@@ -46,6 +50,8 @@ public class Tour {
     private String attractions;
 
     private String destinations;
+    
+    private int isTrending;
 
     public Long getId() {
         return id;

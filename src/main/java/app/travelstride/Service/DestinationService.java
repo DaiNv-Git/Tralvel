@@ -7,7 +7,13 @@ import app.travelstride.Model.Jpa.DestinationRepository;
 import app.travelstride.Model.dto.DestinationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -38,17 +44,38 @@ public class DestinationService {
         Destination dest = new Destination();
         dest.setDestination(dto.getDestination());
         dest.setContinentId(dto.getContinentId());
+        dest.setImageUrl(dto.getImageUrl());  // ✅ Lưu đường dẫn ảnh vào DB
         destinationRepository.save(dest);
     }
 
+
     // Update Destination
-    public void updateDestination(Long id, DestinationDTO dto) {
+    public void updateDestination(Long id, DestinationDTO dto, MultipartFile image) {
         Destination dest = destinationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Destination not found"));
+
         dest.setDestination(dto.getDestination());
         dest.setContinentId(dto.getContinentId());
+
+        if (image != null && !image.isEmpty()) {
+            try {
+                String uploadDir = "uploads/images/";
+                File dir = new File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                Path filePath = Paths.get(uploadDir, fileName);
+                Files.write(filePath, image.getBytes());
+                dest.setImageUrl("/images/" + fileName);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload image");
+            }
+        }
+
         destinationRepository.save(dest);
     }
+
 
     // Delete Destination
     public void deleteDestination(Long id) {

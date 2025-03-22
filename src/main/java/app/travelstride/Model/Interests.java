@@ -12,7 +12,10 @@ public class Interests {
     private Long id;
 
     private String name;
+    
+    
 
+  
     public Interests() {
     }
 
