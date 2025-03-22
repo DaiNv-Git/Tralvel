@@ -85,7 +85,7 @@ public class TripRequest {
     }
 
     public enum BudgetStrictness {
-        strict, flexible
+        strict, flexible,somewhat_flexible
     }
 
     public Long getId() {
