@@ -48,6 +48,14 @@ public class TripRequest {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    public String getConcurrent() {
+        return concurrent;
+    }
+
+    public void setConcurrent(String concurrent) {
+        this.concurrent = concurrent;
+    }
+
     public enum DateType {
         exact, approximate, decide_later
     }
