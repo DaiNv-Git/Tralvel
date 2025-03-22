@@ -34,12 +34,15 @@ public class TripRequest {
 
     @Lob
     private String activityDetail;
-
     private String firstName;
+    private String whenDate;
+    private String totalDate;
     private String lastName;
     private String email;
     private String phoneNumber;
     private String contactMethod;
+    @Lob
+    private String description;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
