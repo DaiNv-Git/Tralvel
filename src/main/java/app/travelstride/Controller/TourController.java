@@ -167,6 +167,7 @@ public class TourController {
     @GetMapping("/getFull/{id}")
     public Map<String, Object> getFullTour(@PathVariable Long id) {
         Map<String, Object> result = new HashMap<>();
+
         result.put("tour", tourRepository.findById(id));
         result.put("images", tourImageRepository.findByTourId(id));
         result.put("themes", themeRepository.findByTourIds(Collections.singletonList(id)));
@@ -175,10 +176,45 @@ public class TourController {
         result.put("interest", interestsRepository.findByTourIds(Collections.singletonList(id)));
         result.put("styles", stylesRepository.findByTourIds(Collections.singletonList(id)));
         result.put("images", tourImageRepository.findImagesByTourIds(Collections.singletonList(id)));
-        result.put("reviews", reviewRepository.findByTourId(id));
+
+        // Lấy list review
+        List<Review> reviews = reviewRepository.findByTourId(id);
+        result.put("reviews", reviews);
+
+        // Tính trung bình rating
+        if (!reviews.isEmpty()) {
+            double overall = 0, value = 0, guide = 0, activities = 0, lodging = 0, transportation = 0, meals = 0;
+
+            for (Review review : reviews) {
+                overall += review.getOverallRating();
+                value += review.getValueRating();
+                guide += review.getGuideRating();
+                activities += review.getActivitiesRating();
+                lodging += review.getLodgingRating();
+                transportation += review.getTransportationRating();
+                meals += review.getMealsRating();
+            }
+
+            int totalReviews = reviews.size();
+            Map<String, Object> averageRatings = new HashMap<>();
+            averageRatings.put("overallRatingAvg", overall / totalReviews);
+            averageRatings.put("valueRatingAvg", value / totalReviews);
+            averageRatings.put("guideRatingAvg", guide / totalReviews);
+            averageRatings.put("activitiesRatingAvg", activities / totalReviews);
+            averageRatings.put("lodgingRatingAvg", lodging / totalReviews);
+            averageRatings.put("transportationRatingAvg", transportation / totalReviews);
+            averageRatings.put("mealsRatingAvg", meals / totalReviews);
+            averageRatings.put("totalReviews", totalReviews);
+
+            result.put("averageRatings", averageRatings);
+        } else {
+            result.put("averageRatings", "No reviews available");
+        }
+
         result.put("logistics", logisticsRepository.findByTourId(id));
         return result;
     }
+
 
     // ✅ Hàm lưu file ảnh
     private String saveImage(MultipartFile file) {
