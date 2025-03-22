@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class TourService {
@@ -24,4 +26,7 @@ public class TourService {
     }
 
 
+    public List<Tour> getTrendingTours() {
+        return tourRepository.findByIsTrending(1);  // 1 nghĩa là true
+    }
 }

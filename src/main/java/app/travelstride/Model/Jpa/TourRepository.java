@@ -84,5 +84,6 @@ public interface TourRepository  extends JpaRepository<Tour, Long> {
     )
 """)
     Page<Tour> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
+    List<Tour> findByIsTrending(int isTrending);
 
 }

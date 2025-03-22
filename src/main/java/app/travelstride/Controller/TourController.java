@@ -54,7 +54,8 @@ public class TourController {
     private TourInterestsRepository tourInterestsRepository;
     @Autowired
     private TourStyleRepository tourStyleRepository;
-
+    @Autowired
+    private TourService tourService;
 
     @Autowired
     private ThemeRepository themeRepository;
@@ -297,6 +298,10 @@ public class TourController {
 
         return ResponseEntity.ok(result);
     }
-
+    @GetMapping("/trending")
+    public ResponseEntity<List<Tour>> getTrendingTours() {
+        List<Tour> trendingTours = tourService.getTrendingTours();
+        return ResponseEntity.ok(trendingTours);
+    }
 }
 
