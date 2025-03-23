@@ -18,7 +18,7 @@ public class Continents {
     @Column(name = "ContinentName")
     private String continentName;
     private String imageUrl;
-
+    private String description;
     public String getImageUrl() {
         return imageUrl;
     }

@@ -19,6 +19,7 @@ public class Destination {
     private Long continentId;
 
     private String imageUrl;
+    private String description;
 
     public String getImageUrl() {
         return imageUrl;
