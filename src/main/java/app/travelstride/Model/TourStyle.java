@@ -20,7 +20,7 @@ public class TourStyle {
                 this.id = id;
         }
 
-        public Long getTourId() {
+         public Long getTourId() {
                 return tourId;
         }
 
