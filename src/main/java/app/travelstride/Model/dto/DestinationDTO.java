@@ -9,6 +9,15 @@ public class DestinationDTO {
     private String description;
 
     private String imageUrl;
+    private  Boolean isShow;
+
+    public Boolean getShow() {
+        return isShow;
+    }
+
+    public void setShow(Boolean show) {
+        isShow = show;
+    }
 
     public String getDescription() {
         return description;

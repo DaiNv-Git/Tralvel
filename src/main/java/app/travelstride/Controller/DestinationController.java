@@ -45,6 +45,7 @@ public class DestinationController {
     public ResponseEntity<String> createDestination(@RequestParam("destination") String destination,
                                                     @RequestParam("description") String description,
                                                     @RequestParam("continentId") Long continentId,
+                                                    @RequestParam("isShow") boolean isShow,
                                                     @RequestParam("image") MultipartFile image) {
         try {
             // ✅ Xử lý upload ảnh
@@ -64,6 +65,7 @@ public class DestinationController {
             dto.setContinentId(continentId);
             dto.setImageUrl("/images/" + fileName); // ✅ Lưu đường dẫn ảnh vào DTO
             dto.setDescription(description);
+            dto.setShow(isShow);
             // ✅ Gọi service lưu DB
             destinationService.createDestination(dto);
             return ResponseEntity.ok("Created successfully");
