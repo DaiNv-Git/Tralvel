@@ -34,7 +34,7 @@ jobs:
             echo "== Restart PM2 app =="
             cd target/
             pm2 delete travel-app || true
-            pm2 start java --name travel-app -- -jar TravelStride-0.0.1-SNAPSHOT.jar --server.port=8080
+            pm2 start java --name travel-app -- -jar TravelStride-0.0.1-SNAPSHOT.jar --server.port=3082
 
       - name: Notify Telegram Success
         run: |
