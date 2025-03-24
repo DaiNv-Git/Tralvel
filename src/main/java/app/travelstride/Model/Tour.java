@@ -52,6 +52,48 @@ public class Tour {
     private String destinations;
     
     private int isTrending;
+    private String price;
+    private String oldPrice;
+
+    public String getVideo() {
+        return video;
+    }
+
+    public void setVideo(String video) {
+        this.video = video;
+    }
+
+    public int getTotalDay() {
+        return totalDay;
+    }
+
+    public void setTotalDay(int totalDay) {
+        this.totalDay = totalDay;
+    }
+
+    public int getIsTrending() {
+        return isTrending;
+    }
+
+    public void setIsTrending(int isTrending) {
+        this.isTrending = isTrending;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getOldPrice() {
+        return oldPrice;
+    }
+
+    public void setOldPrice(String oldPrice) {
+        this.oldPrice = oldPrice;
+    }
 
     public Long getId() {
         return id;
