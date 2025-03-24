@@ -15,6 +15,6 @@ public interface DestinationRepository extends JpaRepository<Destination, Long> 
     @Query("SELECT d FROM Destination d WHERE d.isShow = :isShow")
     List<Destination> findVisibleDestinations(@Param("isShow") boolean isShow);
 
-
+    List<Destination> findByContinentId(Long continentId);
 
 }

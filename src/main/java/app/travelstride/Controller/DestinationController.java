@@ -1,6 +1,10 @@
 package app.travelstride.Controller;
 
+import app.travelstride.Model.Continents;
 import app.travelstride.Model.Destination;
+import app.travelstride.Model.Jpa.ContinentRepository;
+import app.travelstride.Model.Jpa.DestinationRepository;
+import app.travelstride.Model.dto.ContinentWithDestinationsDTO;
 import app.travelstride.Model.dto.DestinationDTO;
 import app.travelstride.Service.DestinationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -33,7 +37,24 @@ public class DestinationController {
 
     @Autowired
     private DestinationService destinationService;
+    @Autowired
+    private ContinentRepository continentsRepository;
 
+    @Autowired
+    private DestinationRepository destinationRepository;
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllContinentsWithDestinations() {
+        List<Continents> continents = continentsRepository.findAll();
+        List<ContinentWithDestinationsDTO> result = new ArrayList<>();
+
+        for (Continents continent : continents) {
+            List<Destination> destinations = destinationRepository.findByContinentId(continent.getContinentId());
+            result.add(new ContinentWithDestinationsDTO(continent, destinations));
+        }
+
+        return ResponseEntity.ok(result);
+    }
     // ✅ Get All
     @GetMapping
     public List<Map<String, Object>> getAll() {
