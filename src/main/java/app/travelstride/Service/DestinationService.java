@@ -33,6 +33,8 @@ public class DestinationService {
             map.put("id", dest.getId());
             map.put("destination", dest.getDestination());
             map.put("continentId", dest.getContinentId());
+            map.put("description", dest.getDescription());
+            map.put("iamge", dest.getImageUrl());
             map.put("continentName", continent.map(Continents::getContinentName).orElse("Unknown"));
             result.add(map);
         }
@@ -56,6 +58,7 @@ public class DestinationService {
 
         dest.setDestination(dto.getDestination());
         dest.setContinentId(dto.getContinentId());
+        dest.setDescription(dto.getDescription());
 
         if (image != null && !image.isEmpty()) {
             try {
@@ -86,4 +89,8 @@ public class DestinationService {
     public List<Destination> getByContinent(int continentId) {
         return destinationRepository.findByContinentId(continentId);
     }
+    public List<Destination> getAllDestination() {
+        return destinationRepository.findAll();
+    }
+
 }

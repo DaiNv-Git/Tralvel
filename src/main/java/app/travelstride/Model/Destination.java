@@ -19,7 +19,18 @@ public class Destination {
     private Long continentId;
 
     private String imageUrl;
+
     private String description;
+
+    private  Boolean isShow;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getImageUrl() {
         return imageUrl;

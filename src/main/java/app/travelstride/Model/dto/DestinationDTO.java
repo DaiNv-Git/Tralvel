@@ -6,8 +6,17 @@ import lombok.Data;
 public class DestinationDTO {
     private String destination;
     private Long continentId;
+    private String description;
 
     private String imageUrl;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getImageUrl() {
         return imageUrl;

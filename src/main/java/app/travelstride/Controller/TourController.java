@@ -324,6 +324,7 @@ public class TourController {
         Page<Tour> tours = tourRepository.searchByKeyword(keyword, pageable);
 
         List<Long> tourIds = tours.getContent().stream().map(Tour::getId).collect(Collectors.toList());
+        List<Map<String, Object>> reviewSummary = reviewRepository.getReviewSummaryByTourIds(tourIds);
 
         Map<String, Object> result = new HashMap<>();
         result.put("tours", tours.getContent());
@@ -331,7 +332,7 @@ public class TourController {
         result.put("currentPage", tours.getNumber());
         result.put("totalItems", tours.getTotalElements());
         result.put("totalPages", tours.getTotalPages());
-
+        result.put("reviews", reviewSummary);
         return ResponseEntity.ok(result);
     }
     @GetMapping("/trending")

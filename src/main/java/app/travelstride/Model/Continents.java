@@ -19,6 +19,15 @@ public class Continents {
     private String continentName;
     private String imageUrl;
     private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }

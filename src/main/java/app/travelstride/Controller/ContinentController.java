@@ -36,6 +36,7 @@ public class ContinentController {
     // Thêm mới continent
     @PostMapping("/create")
     public ResponseEntity<?> createContinent(@RequestParam("continentName") String continentName,
+                                             @RequestParam("description") String description,
                                              @RequestParam("file") MultipartFile file) {
         try {
             // Tạo thư mục uploads nếu chưa có
@@ -57,6 +58,7 @@ public class ContinentController {
             Continents continent = new Continents();
             continent.setContinentName(continentName);
             continent.setImageUrl(imageUrl);
+            continent.setDescription(description);
             continentRepository.save(continent);
 
             return ResponseEntity.ok(continent);

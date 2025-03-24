@@ -31,4 +31,8 @@ public class StylesService {
     public void delete(Long id) {
         stylesRepository.deleteById(id);
     }
+
+    public List<Styles> getAllStyles() {
+        return stylesRepository.findAll();
+    }
 }
