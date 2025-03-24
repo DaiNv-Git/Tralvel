@@ -166,25 +166,23 @@ public class TourController {
 
     @GetMapping("/getFull/{id}")
     public Map<String, Object> getFullTour(@PathVariable Long id) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
 
-        result.put("tour", tourRepository.findById(id));
-        result.put("images", tourImageRepository.findByTourId(id));
-        result.put("themes", themeRepository.findByTourIds(Collections.singletonList(id)));
-        result.put("trending", tredingRepository.findByTourIds(Collections.singletonList(id)));
-        result.put("activities", activityRepository.findByTourIds(Collections.singletonList(id)));
-        result.put("interest", interestsRepository.findByTourIds(Collections.singletonList(id)));
-        result.put("styles", stylesRepository.findByTourIds(Collections.singletonList(id)));
-        result.put("images", tourImageRepository.findImagesByTourIds(Collections.singletonList(id)));
+        // Lấy thông tin tour
+        Optional<Tour> tourOpt = tourRepository.findById(id);
+        if (tourOpt.isEmpty()) {
+            data.put("message", "Tour not found");
+            return data;
+        }
 
-        // Lấy list review
+        Tour tour = tourOpt.get();
+
         List<Review> reviews = reviewRepository.findByTourId(id);
-        result.put("reviews", reviews);
 
-        // Tính trung bình rating
+
+        Map<String, Object> averageRatings = new HashMap<>();
         if (!reviews.isEmpty()) {
             double overall = 0, value = 0, guide = 0, activities = 0, lodging = 0, transportation = 0, meals = 0;
-
             for (Review review : reviews) {
                 overall += review.getOverallRating();
                 value += review.getValueRating();
@@ -194,26 +192,35 @@ public class TourController {
                 transportation += review.getTransportationRating();
                 meals += review.getMealsRating();
             }
-
-            int totalReviews = reviews.size();
-            Map<String, Object> averageRatings = new HashMap<>();
-            averageRatings.put("overallRatingAvg", overall / totalReviews);
-            averageRatings.put("valueRatingAvg", value / totalReviews);
-            averageRatings.put("guideRatingAvg", guide / totalReviews);
-            averageRatings.put("activitiesRatingAvg", activities / totalReviews);
-            averageRatings.put("lodgingRatingAvg", lodging / totalReviews);
-            averageRatings.put("transportationRatingAvg", transportation / totalReviews);
-            averageRatings.put("mealsRatingAvg", meals / totalReviews);
-            averageRatings.put("totalReviews", totalReviews);
-
-            result.put("averageRatings", averageRatings);
+            int total = reviews.size();
+            averageRatings.put("overallRatingAvg", overall / total);
+            averageRatings.put("valueRatingAvg", value / total);
+            averageRatings.put("guideRatingAvg", guide / total);
+            averageRatings.put("activitiesRatingAvg", activities / total);
+            averageRatings.put("lodgingRatingAvg", lodging / total);
+            averageRatings.put("transportationRatingAvg", transportation / total);
+            averageRatings.put("mealsRatingAvg", meals / total);
+            averageRatings.put("totalReviews", total);
         } else {
-            result.put("averageRatings", "No reviews available");
+            averageRatings.put("message", "No reviews available");
         }
 
-        result.put("logistics", logisticsRepository.findByTourId(id));
-        return result;
+        Map<String, Object> tourData = new HashMap<>();
+        tourData.put("tour", tour);
+        tourData.put("images", tourImageRepository.findImagesByTourIds(Collections.singletonList(id)));
+        tourData.put("themes", themeRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("trending", tredingRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("activities", activityRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("interest", interestsRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("styles", stylesRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("reviews", reviews);
+        tourData.put("averageRatings", averageRatings);
+        tourData.put("logistics", logisticsRepository.findByTourId(id));
+
+        data.put("tourData", tourData);
+        return data;
     }
+
 
 
     // ✅ Hàm lưu file ảnh

@@ -17,7 +17,7 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            cd /root/travel/Tralvel
+            cd .travel/Tralvel/
 
             echo "== Pull latest code =="
             git pull origin main
@@ -40,5 +40,5 @@ jobs:
         run: |
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text=" ✅ Dai Dev Try CI/CD Build and Deploy thành công trên *${{ github.ref_name }}* 🚀" \
+          -d text="✅ Dai Dev Try CI/CD Build and Deploy thành công trên *${{ github.ref_name }}* 🚀" \
           -d parse_mode=Markdown
