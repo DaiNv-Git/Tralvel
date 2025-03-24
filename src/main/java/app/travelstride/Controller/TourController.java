@@ -73,7 +73,6 @@ public class TourController {
     @Autowired
     private StylesRepository stylesRepository;
 
-
     @PostMapping(value = "/createFull", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
     public String createFullTour(
