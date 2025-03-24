@@ -1,5 +1,6 @@
 package app.travelstride.Controller;
 
+import app.travelstride.Config.CommonUpload;
 import app.travelstride.Model.*;
 import app.travelstride.Model.Jpa.*;
 import app.travelstride.Model.dto.HomePageResponse;
@@ -10,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,33 +40,69 @@ public class HomeController {
     private PostRepository postRepository;
     @Autowired
     private ReviewRepository reviewRepository;
-
+    @Autowired
+    private CommonUpload commonUpload;
     @GetMapping("/banners")
     public List<BannerGroup> getBanners() {
         return bannerService.getAllBanners();
     }
 
+
     @PostMapping("/banners")
-    public BannerGroup createBanner(@RequestBody BannerGroup bannerGroup) {
-        if (bannerGroup.getImages() != null) {
-            bannerGroup.getImages().forEach(img -> img.setBannerGroup(bannerGroup));
+    public BannerGroup createBanner(@RequestParam("title") String title,
+                                    @RequestParam(value = "subTitle", required = false) String subTitle,
+                                    @RequestParam(value = "files", required = false) List<MultipartFile> files) throws IOException {
+        BannerGroup bannerGroup = new BannerGroup();
+        bannerGroup.setTitle(title);
+        bannerGroup.setSubTitle(subTitle);
+
+        List<BannerImage> imageList = new ArrayList<>();
+        if (files != null) {
+            int sequence = 1;
+            for (MultipartFile file : files) {
+                String imageUrl = commonUpload.saveImage(file);
+
+                BannerImage image = new BannerImage();
+                image.setImageUrl(imageUrl);
+                image.setSequence(sequence++);
+                image.setBannerGroup(bannerGroup);
+
+                imageList.add(image);
+            }
         }
+        bannerGroup.setImages(imageList);
+
         return bannerService.saveBanner(bannerGroup);
     }
 
     @PutMapping("/banners/{id}")
-    public BannerGroup updateBanner(@PathVariable Long id, @RequestBody BannerGroup updatedBanner) {
-        BannerGroup existing = bannerService.getBannerById(id);
-        existing.setTitle(updatedBanner.getTitle());
-        existing.setSubTitle(updatedBanner.getSubTitle());
+    public BannerGroup updateBanner(@PathVariable Long id,
+                                    @RequestParam("title") String title,
+                                    @RequestParam(value = "subTitle", required = false) String subTitle,
+                                    @RequestParam(value = "files", required = false) List<MultipartFile> files) throws IOException, IOException {
 
+        BannerGroup existing = bannerService.getBannerById(id);
+        existing.setTitle(title);
+        existing.setSubTitle(subTitle);
+
+        // Xóa ảnh cũ
         existing.getImages().clear();
-        if (updatedBanner.getImages() != null) {
-            updatedBanner.getImages().forEach(img -> {
-                img.setBannerGroup(existing);
-                existing.getImages().add(img);
-            });
+
+        // Thêm ảnh mới nếu có upload
+        if (files != null) {
+            int sequence = 1;
+            for (MultipartFile file : files) {
+                String imageUrl = commonUpload.saveImage(file);
+
+                BannerImage image = new BannerImage();
+                image.setImageUrl(imageUrl);
+                image.setSequence(sequence++);
+                image.setBannerGroup(existing);
+
+                existing.getImages().add(image);
+            }
         }
+
         return bannerService.saveBanner(existing);
     }
 

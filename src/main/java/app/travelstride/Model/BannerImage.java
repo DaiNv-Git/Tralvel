@@ -1,11 +1,14 @@
 package app.travelstride.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
 @Data
 @Table(name = "banner_image")
+@JsonIgnoreProperties("bannerGroup")
 public class BannerImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,6 +18,7 @@ public class BannerImage {
     private String imageUrl;
 
     private Integer sequence;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "banner_group_id")

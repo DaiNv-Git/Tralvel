@@ -1,6 +1,7 @@
 package app.travelstride.Model;
 
 import app.travelstride.Model.BannerImage;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
