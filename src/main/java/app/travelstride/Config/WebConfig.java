@@ -9,9 +9,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/images/**") // URL mapping
-                .addResourceLocations("file:uploads/images/"); // Đường dẫn folder thật
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:/root/.travel/Tralvel/uploads/images/");
     }
+
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
