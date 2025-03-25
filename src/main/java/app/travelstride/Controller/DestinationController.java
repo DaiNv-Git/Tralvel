@@ -46,7 +46,7 @@ public class DestinationController {
     @GetMapping("/all")
     public ResponseEntity<?> getAllContinentsWithDestinations() {
         List<Continents> continents = continentsRepository.findAll();
-        List<ContinentWithDestinationsDTO> result = new ArrayList<>();
+            List<ContinentWithDestinationsDTO> result = new ArrayList<>();
 
         for (Continents continent : continents) {
             List<Destination> destinations = destinationRepository.findByContinentId(continent.getContinentId());
