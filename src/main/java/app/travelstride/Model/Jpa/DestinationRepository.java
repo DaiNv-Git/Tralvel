@@ -16,5 +16,11 @@ public interface DestinationRepository extends JpaRepository<Destination, Long> 
     List<Destination> findVisibleDestinations(@Param("isShow") boolean isShow);
 
     List<Destination> findByContinentId(Long continentId);
+    @Query("""
+    SELECT d FROM Destination d
+    JOIN TourDestination td ON d.id = td.destination.id
+    WHERE td.tour.id = :tourId
+""")
+    List<Destination> findByTourId(@Param("tourId") Long tourId);
 
 }

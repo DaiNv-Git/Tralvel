@@ -58,10 +58,8 @@ public interface TourRepository  extends JpaRepository<Tour, Long> {
                          @Param("attractions") String attractions,
                          @Param("destinations") String destinations,
                          Pageable pageable);
-
-
     @Query("""
-    SELECT t FROM Tour t
+    SELECT DISTINCT t FROM Tour t
     LEFT JOIN TourTheme tt ON t.id = tt.tourId
     LEFT JOIN Theme th ON tt.themeId = th.themeId
     LEFT JOIN TourTrending ttr ON t.id = ttr.tourId
@@ -72,6 +70,8 @@ public interface TourRepository  extends JpaRepository<Tour, Long> {
     LEFT JOIN Interests i ON ti.interestId = i.id
     LEFT JOIN TourStyle ts ON t.id = ts.tourId
     LEFT JOIN Styles s ON ts.styleId = s.id
+    LEFT JOIN TourDestination td ON t.id = td.tour.id
+    LEFT JOIN Destination d ON td.destination.id = d.id
     WHERE (:keyword IS NULL 
         OR LOWER(t.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
         OR LOWER(t.attractions) LIKE LOWER(CONCAT('%', :keyword, '%'))
@@ -82,13 +82,10 @@ public interface TourRepository  extends JpaRepository<Tour, Long> {
         OR LOWER(act.activity) LIKE LOWER(CONCAT('%', :keyword, '%'))
         OR LOWER(i.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
         OR LOWER(s.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        OR LOWER(d.destination) LIKE LOWER(CONCAT('%', :keyword, '%'))  
     )
 """)
     Page<Tour> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
-
-
-
-
 
 
     List<Tour> findByIsTrending(Integer isTrending);

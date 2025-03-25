@@ -3,6 +3,9 @@ package app.travelstride.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Getter
 @Setter
@@ -23,7 +26,8 @@ public class Destination {
     private String description;
 
     private  Boolean isShow;
-
+    @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<TourDestination> tourDestinations = new ArrayList<>();
     public Long getId() {
         return id;
     }
