@@ -330,17 +330,46 @@ public class TourController {
         Page<Tour> tours = tourRepository.searchByKeyword(keyword, pageable);
 
         List<Long> tourIds = tours.getContent().stream().map(Tour::getId).collect(Collectors.toList());
-        List<Map<String, Object>> reviewSummary = reviewRepository.getReviewSummaryByTourIds(tourIds);
 
+        Map<Long, List<String>> imagesMap = tourImageRepository.findImagesByTourIds(tourIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        TourImage::getTourId,
+                        Collectors.mapping(TourImage::getUrl, Collectors.toList())
+                ));
+
+
+
+        Map<Long, Map<String, Object>> reviewsMap = reviewRepository.getReviewSummaryByTourIds(tourIds)
+                .stream()
+                .filter(r -> r.get("tourId") != null)
+                .collect(Collectors.toMap(
+                        r -> ((Number) r.get("tourId")).longValue(),  // Đúng alias
+                        r -> r
+                ));
+
+
+        Map<String, List<Map<String, Object>>> groupedByTripType = new HashMap<>();
+        for (Tour tour : tours.getContent()) {
+            Map<String, Object> tourData = new HashMap<>();
+            tourData.put("tourInfo", tour);
+            tourData.put("images", imagesMap.getOrDefault(tour.getId(), new ArrayList<>()));
+            tourData.put("reviewSummary", reviewsMap.getOrDefault(tour.getId(), new HashMap<>()));
+
+            String tripType = tour.getTripType() != null ? tour.getTripType() : "Unknown";
+            groupedByTripType.computeIfAbsent(tripType, k -> new ArrayList<>()).add(tourData);
+        }
+
+        // Build kết quả
         Map<String, Object> result = new HashMap<>();
-        result.put("tours", tours.getContent());
-        result.put("images", tourImageRepository.findImagesByTourIds(tourIds));
+        result.put("data", groupedByTripType);
         result.put("currentPage", tours.getNumber());
         result.put("totalItems", tours.getTotalElements());
         result.put("totalPages", tours.getTotalPages());
-        result.put("reviews", reviewSummary);
+
         return ResponseEntity.ok(result);
     }
+
     @GetMapping("/trending")
     public ResponseEntity<List<Tour>> getTrendingTours() {
         List<Tour> trendingTours = tourService.getTrendingTours();
