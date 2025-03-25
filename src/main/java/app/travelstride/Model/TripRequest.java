@@ -31,8 +31,7 @@ public class TripRequest {
     @Enumerated(EnumType.STRING)
     @Column(length = 20) 
     private BudgetStrictness budgetStrictness;
-
-
+    
     @Lob
     private String activityDetail;
     private String firstName;

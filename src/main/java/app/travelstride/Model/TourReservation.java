@@ -1,5 +1,6 @@
 package app.travelstride.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "tour_reservation")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TourReservation {
 
     @Id
