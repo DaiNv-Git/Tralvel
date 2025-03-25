@@ -34,5 +34,5 @@ public interface DestinationRepository extends JpaRepository<Destination, Long> 
     WHERE td.tour.id = :tourId
 """)
     List<Destination> findByTourId(@Param("tourId") Long tourId);
-
+    List<Destination> findByContinentIdIn(List<Long> continentIds);
 }

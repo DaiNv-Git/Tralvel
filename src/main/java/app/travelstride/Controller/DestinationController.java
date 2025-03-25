@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/destinations")
@@ -46,15 +47,28 @@ public class DestinationController {
     @GetMapping("/all")
     public ResponseEntity<?> getAllContinentsWithDestinations() {
         List<Continents> continents = continentsRepository.findAll();
-            List<ContinentWithDestinationsDTO> result = new ArrayList<>();
+        List<Long> continentIds = continents.stream()
+                .map(Continents::getContinentId)
+                .collect(Collectors.toList());
 
-        for (Continents continent : continents) {
-            List<Destination> destinations = destinationRepository.findByContinentId(continent.getContinentId());
-            result.add(new ContinentWithDestinationsDTO(continent, destinations));
-        }
+        // Lấy tất cả destination 1 lần (tránh N+1)
+        List<Destination> allDestinations = destinationRepository.findByContinentIdIn(continentIds);
+
+        // Gom destination theo continentId
+        Map<Long, List<Destination>> destinationMap = allDestinations.stream()
+                .collect(Collectors.groupingBy(Destination::getContinentId));
+
+        // Ghép dữ liệu vào DTO
+        List<ContinentWithDestinationsDTO> result = continents.stream()
+                .map(continent -> new ContinentWithDestinationsDTO(
+                        continent,
+                        destinationMap.getOrDefault(continent.getContinentId(), Collections.emptyList())
+                ))
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(result);
     }
+
     // ✅ Get All
     @GetMapping
     public List<Map<String, Object>> getAll() {
