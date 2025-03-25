@@ -1,41 +1,12 @@
-package app.travelstride.Model;
+package app.travelstride.Model.dto;
 
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
-@Data
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-public class Destination {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class DestinationResponseDTO {
     private Long id;
-
     private String destination;
-
     private Long continentId;
-
     private String imageUrl;
-
     private String description;
-
-    private  Boolean isShow;
-    @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<TourDestination> tourDestinations = new ArrayList<>();
-
-    public List<TourDestination> getTourDestinations() {
-        return tourDestinations;
-    }
-
-    public void setTourDestinations(List<TourDestination> tourDestinations) {
-        this.tourDestinations = tourDestinations;
-    }
+    private Long tourNumber;  // nếu muốn đếm số tour
 
     public Long getId() {
         return id;
@@ -77,11 +48,11 @@ public class Destination {
         this.description = description;
     }
 
-    public Boolean getShow() {
-        return isShow;
+    public Long getTourNumber() {
+        return tourNumber;
     }
 
-    public void setShow(Boolean show) {
-        isShow = show;
+    public void setTourNumber(Long tourNumber) {
+        this.tourNumber = tourNumber;
     }
 }

@@ -4,8 +4,10 @@ import app.travelstride.Model.Continents;
 import app.travelstride.Model.Destination;
 import app.travelstride.Model.Jpa.ContinentRepository;
 import app.travelstride.Model.Jpa.DestinationRepository;
+import app.travelstride.Model.dto.ContinentResponseDTO;
 import app.travelstride.Model.dto.ContinentWithDestinationsDTO;
 import app.travelstride.Model.dto.DestinationDTO;
+import app.travelstride.Model.dto.DestinationResponseDTO;
 import app.travelstride.Service.DestinationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,31 +45,43 @@ public class DestinationController {
 
     @Autowired
     private DestinationRepository destinationRepository;
+    @Autowired
+    private ContinentRepository continentRepository;
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllContinentsWithDestinations() {
-        List<Continents> continents = continentsRepository.findAll();
-        List<Long> continentIds = continents.stream()
-                .map(Continents::getContinentId)
-                .collect(Collectors.toList());
+    public List<ContinentWithDestinationsDTO> getContinentsWithDestinations() {
+        List<Continents> continents = continentRepository.findAll();
+        List<ContinentWithDestinationsDTO> result = new ArrayList<>();
 
-        // Lấy tất cả destination 1 lần (tránh N+1)
-        List<Destination> allDestinations = destinationRepository.findByContinentIdIn(continentIds);
+        for (Continents continent : continents) {
+            List<Destination> destinationList = destinationRepository.findByContinentId(continent.getContinentId());
 
-        // Gom destination theo continentId
-        Map<Long, List<Destination>> destinationMap = allDestinations.stream()
-                .collect(Collectors.groupingBy(Destination::getContinentId));
+            List<DestinationResponseDTO> destinationDTOs = destinationList.stream().map(dest -> {
+                DestinationResponseDTO dto = new DestinationResponseDTO();
+                dto.setId(dest.getId());
+                dto.setDestination(dest.getDestination());
+                dto.setContinentId(dest.getContinentId());
+                dto.setImageUrl(dest.getImageUrl());
+                dto.setDescription(dest.getDescription());
+                dto.setTourNumber((long) dest.getTourDestinations().size()); // đếm số tour
+                return dto;
+            }).toList();
 
-        // Ghép dữ liệu vào DTO
-        List<ContinentWithDestinationsDTO> result = continents.stream()
-                .map(continent -> new ContinentWithDestinationsDTO(
-                        continent,
-                        destinationMap.getOrDefault(continent.getContinentId(), Collections.emptyList())
-                ))
-                .collect(Collectors.toList());
+            ContinentResponseDTO continentDTO = new ContinentResponseDTO();
+            continentDTO.setContinentId(continent.getContinentId());
+            continentDTO.setContinentName(continent.getContinentName());
+            continentDTO.setImageUrl(continent.getImageUrl());
+            continentDTO.setDescription(continent.getDescription());
 
-        return ResponseEntity.ok(result);
+            ContinentWithDestinationsDTO dto = new ContinentWithDestinationsDTO();
+            dto.setContinent(continentDTO);
+            dto.setDestinations(destinationDTOs);
+            result.add(dto);
+        }
+
+        return result;
     }
+
 
     // ✅ Get All
     @GetMapping
