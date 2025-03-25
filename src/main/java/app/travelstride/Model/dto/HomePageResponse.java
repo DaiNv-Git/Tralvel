@@ -17,7 +17,7 @@ import java.util.Map;
 public class HomePageResponse {
     private List<BannerGroup> banners;
     private List<Styles> styles;
-    private List<Destination> destinations;
+    private List<DestinationResponse> destinations;
     private List<Post> pots;
     private Map<String, Integer> destinationCount;
     Map<String, Object> findTrips;
@@ -54,11 +54,11 @@ public class HomePageResponse {
         this.styles = styles;
     }
 
-    public List<Destination> getDestinations() {
+    public List<DestinationResponse> getDestinations() {
         return destinations;
     }
 
-    public void setDestinations(List<Destination> destinations) {
+    public void setDestinations(List<DestinationResponse> destinations) {
         this.destinations = destinations;
     }
 

@@ -1,6 +1,7 @@
 package app.travelstride.Model.Jpa;
 
 import app.travelstride.Model.Destination;
+import app.travelstride.Model.dto.DestinationResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,17 @@ public interface DestinationRepository extends JpaRepository<Destination, Long> 
 
     @Query("SELECT d FROM Destination d WHERE d.isShow = :isShow")
     List<Destination> findVisibleDestinations(@Param("isShow") boolean isShow);
+
+    @Query("""
+    SELECT new app.travelstride.Model.dto.DestinationResponse(
+        d.id, d.destination, d.continentId, d.imageUrl, d.description, COUNT(DISTINCT td.tour.id)
+    )
+    FROM Destination d
+    LEFT JOIN TourDestination td ON d.id = td.destination.id
+    GROUP BY d.id, d.destination, d.continentId, d.imageUrl, d.description
+""")
+    List<DestinationResponse> getDestinationWithTourCount();
+
 
     List<Destination> findByContinentId(Long continentId);
     @Query("""

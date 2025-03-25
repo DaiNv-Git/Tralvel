@@ -3,6 +3,7 @@ package app.travelstride.Controller;
 import app.travelstride.Config.CommonUpload;
 import app.travelstride.Model.*;
 import app.travelstride.Model.Jpa.*;
+import app.travelstride.Model.dto.DestinationResponse;
 import app.travelstride.Model.dto.HomePageResponse;
 import app.travelstride.Service.BannerService;
 import app.travelstride.Service.DestinationService;
@@ -117,7 +118,7 @@ public class HomeController {
         List<BannerGroup> banners = bannerRepository.findAll();
         List<Styles> styles = stylesRepository.findAll();
         List<Post> posts = postRepository.findByIsShow(true);
-        List<Destination> destinations = destinationRepository.findVisibleDestinations(true);
+        List<DestinationResponse> destinations = destinationRepository.getDestinationWithTourCount();
         Map<String, Integer> destinationCount = countToursByDestination();
         Map<String, Object> findTrips = searchTours(1);
         response.setBanners(banners);
