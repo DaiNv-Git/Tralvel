@@ -10,30 +10,22 @@ import java.util.List;
 
 @Data
 public class ContinentWithDestinationsDTO {
-    private Continents continent;
-    private List<Destination> destinations;
+    private ContinentResponseDTO continent;
+    private List<DestinationResponseDTO> destinations;
 
-    public ContinentWithDestinationsDTO() {
-    }
-
-    public ContinentWithDestinationsDTO(Continents continent, List<Destination> destinations) {
-        this.continent = continent;
-        this.destinations = destinations;
-    }
-
-    public Continents getContinent() {
+    public ContinentResponseDTO getContinent() {
         return continent;
     }
 
-    public void setContinent(Continents continent) {
+    public void setContinent(ContinentResponseDTO continent) {
         this.continent = continent;
     }
 
-    public List<Destination> getDestinations() {
+    public List<DestinationResponseDTO> getDestinations() {
         return destinations;
     }
 
-    public void setDestinations(List<Destination> destinations) {
+    public void setDestinations(List<DestinationResponseDTO> destinations) {
         this.destinations = destinations;
     }
 }

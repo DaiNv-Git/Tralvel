@@ -14,7 +14,7 @@ public class Tour {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String tripId;            // Mã chuyến đi
+    private String tripId;
 
     private String name;
 

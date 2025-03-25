@@ -72,6 +72,11 @@ public class TourController {
 
     @Autowired
     private StylesRepository stylesRepository;
+    @Autowired
+    private DestinationRepository destinationRepository ;
+
+    @Autowired
+    private TourDestinationRepository tourDestinationRepository ;
 
     @PostMapping(value = "/createFull", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
@@ -167,7 +172,6 @@ public class TourController {
     public Map<String, Object> getFullTour(@PathVariable Long id) {
         Map<String, Object> data = new HashMap<>();
 
-        // Lấy thông tin tour
         Optional<Tour> tourOpt = tourRepository.findById(id);
         if (tourOpt.isEmpty()) {
             data.put("message", "Tour not found");
@@ -175,9 +179,7 @@ public class TourController {
         }
 
         Tour tour = tourOpt.get();
-
         List<Review> reviews = reviewRepository.findByTourId(id);
-
 
         Map<String, Object> averageRatings = new HashMap<>();
         if (!reviews.isEmpty()) {
@@ -215,10 +217,12 @@ public class TourController {
         tourData.put("reviews", reviews);
         tourData.put("averageRatings", averageRatings);
         tourData.put("logistics", logisticsRepository.findByTourId(id));
+        tourData.put("destinations", destinationRepository.findByTourId(id)); // ✅ Thêm dòng này
 
         data.put("tourData", tourData);
         return data;
     }
+
 
 
 
@@ -327,20 +331,74 @@ public class TourController {
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
+        // Gọi đúng repository sử dụng @Query bạn đã viết
         Page<Tour> tours = tourRepository.searchByKeyword(keyword, pageable);
 
-        List<Long> tourIds = tours.getContent().stream().map(Tour::getId).collect(Collectors.toList());
-        List<Map<String, Object>> reviewSummary = reviewRepository.getReviewSummaryByTourIds(tourIds);
+        if (tours.isEmpty()) {
+            Map<String, Object> emptyResult = new HashMap<>();
+            emptyResult.put("data", Collections.emptyMap());
+            emptyResult.put("currentPage", page);
+            emptyResult.put("totalItems", 0);
+            emptyResult.put("totalPages", 0);
+            return ResponseEntity.ok(emptyResult);
+        }
 
+        // Lấy ra danh sách tourId
+        List<Long> tourIds = tours.getContent().stream().map(Tour::getId).toList();
+
+        // Lấy hình ảnh theo list tourId
+        Map<Long, List<String>> imagesMap = tourImageRepository.findImagesByTourIds(tourIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        TourImage::getTourId,
+                        Collectors.mapping(TourImage::getUrl, Collectors.toList())
+                ));
+
+        // Lấy review summary theo list tourId
+        Map<Long, Map<String, Object>> reviewsMap = reviewRepository.getReviewSummaryByTourIds(tourIds)
+                .stream()
+                .filter(r -> r.get("tourId") != null)
+                .collect(Collectors.toMap(
+                        r -> ((Number) r.get("tourId")).longValue(),
+                        r -> r
+                ));
+
+        // Gom group theo tripType
+        Map<String, List<Map<String, Object>>> groupedByTripType = new HashMap<>();
+        for (Tour tour : tours.getContent()) {
+            Map<String, Object> tourData = new HashMap<>();
+            tourData.put("tourInfo", tour);
+            tourData.put("images", imagesMap.getOrDefault(tour.getId(), new ArrayList<>()));
+            tourData.put("reviewSummary", reviewsMap.getOrDefault(tour.getId(), new HashMap<>()));
+
+            String tripType = tour.getTripType() != null ? tour.getTripType() : "Unknown";
+            groupedByTripType.computeIfAbsent(tripType, k -> new ArrayList<>()).add(tourData);
+        }
+
+        // Build response
         Map<String, Object> result = new HashMap<>();
-        result.put("tours", tours.getContent());
-        result.put("images", tourImageRepository.findImagesByTourIds(tourIds));
+        result.put("data", groupedByTripType);
         result.put("currentPage", tours.getNumber());
         result.put("totalItems", tours.getTotalElements());
         result.put("totalPages", tours.getTotalPages());
-        result.put("reviews", reviewSummary);
+
         return ResponseEntity.ok(result);
     }
+    private void saveDestinations(List<Long> destinationIds, Long tourId) {
+        if (destinationIds != null && !destinationIds.isEmpty()) {
+            Tour tour = tourRepository.getReferenceById(tourId); // hoặc findById().get()
+            destinationIds.forEach(destinationId -> {
+                Destination destination = destinationRepository.getReferenceById(destinationId);
+                TourDestination tourDestination = new TourDestination();
+                tourDestination.setTour(tour);
+                tourDestination.setDestination(destination);
+                tourDestinationRepository.save(tourDestination);
+            });
+        }
+    }
+
+
+
     @GetMapping("/trending")
     public ResponseEntity<List<Tour>> getTrendingTours() {
         List<Tour> trendingTours = tourService.getTrendingTours();
