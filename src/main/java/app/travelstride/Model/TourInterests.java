@@ -14,6 +14,17 @@ public class TourInterests {
     private Long interestId;
     private Long tourId;
 
+    public TourInterests() {
+    }
+
+    public TourInterests(Long id, Long interestId) {
+        this.id = id;
+        this.interestId = interestId;
+    }
+
+    public TourInterests(Object o, Long iid, Long id) {
+    }
+
     public Long getId() {
         return id;
     }

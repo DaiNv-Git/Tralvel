@@ -1,5 +1,6 @@
 package app.travelstride.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,8 +10,6 @@ import java.util.List;
 @Data
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 public class Destination {
     @Id
@@ -26,11 +25,30 @@ public class Destination {
     private String description;
 
     private  Boolean isShow;
+    
     @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<TourDestination> tourDestinations = new ArrayList<>();
+
+
+    public Destination(Long did) {
+    }
 
     public List<TourDestination> getTourDestinations() {
         return tourDestinations;
+    }
+
+    public Destination() {
+    }
+
+    public Destination(Long id, String destination, Long continentId, String imageUrl, String description, Boolean isShow, List<TourDestination> tourDestinations) {
+        this.id = id;
+        this.destination = destination;
+        this.continentId = continentId;
+        this.imageUrl = imageUrl;
+        this.description = description;
+        this.isShow = isShow;
+        this.tourDestinations = tourDestinations;
     }
 
     public void setTourDestinations(List<TourDestination> tourDestinations) {

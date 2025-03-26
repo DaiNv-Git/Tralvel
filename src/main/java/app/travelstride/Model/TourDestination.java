@@ -1,6 +1,7 @@
 package app.travelstride.Model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -17,6 +18,7 @@ public class TourDestination {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "destination_id")
+    @JsonIgnore
     private Destination destination;
 
     // Nếu sau này muốn thêm cột như "visit_order" hay "note"
@@ -28,6 +30,9 @@ public class TourDestination {
     public TourDestination(Tour tour, Destination destination) {
         this.tour = tour;
         this.destination = destination;
+    }
+
+    public TourDestination(Object o, Tour savedTour, Destination destination) {
     }
 
     // Getters & Setters

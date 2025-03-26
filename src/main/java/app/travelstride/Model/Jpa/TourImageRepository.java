@@ -9,10 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface TourImageRepository extends JpaRepository<TourImage, Long> {
-    List<TourImage> findByTourId(Long tourId);
-
-    void deleteAllByTourId(Long tourId);
-
+    void deleteByTourId(Long id);
     @Query("SELECT ti FROM TourImage ti WHERE ti.tourId IN :tourIds")
     List<TourImage> findImagesByTourIds(@Param("tourIds") List<Long> tourIds);
 

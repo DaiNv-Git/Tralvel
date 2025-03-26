@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TourDestinationRepository extends JpaRepository<TourDestination, Long> {
+    void deleteByTourId(Long id);
 }

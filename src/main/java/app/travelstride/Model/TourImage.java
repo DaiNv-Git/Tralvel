@@ -14,7 +14,15 @@ public class TourImage {
     private Long tourId;  
 
     private String url;
-    
+
+    public TourImage() {
+    }
+
+    public TourImage(Long id, Long tourId, String url) {
+        this.id = id;
+        this.tourId = tourId;
+        this.url = url;
+    }
 
     public Long getId() {
         return id;
