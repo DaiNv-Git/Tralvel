@@ -22,7 +22,9 @@ public class TourInterests {
         this.interestId = interestId;
     }
 
-    public TourInterests(Object o, Long iid, Long id) {
+    public TourInterests(Object o, Long interestId, Long tourId) {
+        this.interestId = interestId;
+        this.tourId = tourId;
     }
 
     public Long getId() {

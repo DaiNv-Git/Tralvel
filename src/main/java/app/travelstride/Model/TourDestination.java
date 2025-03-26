@@ -26,14 +26,25 @@ public class TourDestination {
 
     // Constructors
     public TourDestination() {}
-
     public TourDestination(Tour tour, Destination destination) {
         this.tour = tour;
         this.destination = destination;
     }
-
-    public TourDestination(Object o, Tour savedTour, Destination destination) {
+    public TourDestination(Long id, Tour tour, Destination destination) {
+        this.id = id;
+        this.tour = tour;
+        this.destination = destination;
     }
+    public TourDestination(Object o, Long id, Long did) {
+    }
+
+
+    public void Destination(Long id) {
+        this.id = id;
+    }
+
+
+  
 
     // Getters & Setters
     public Long getId() {

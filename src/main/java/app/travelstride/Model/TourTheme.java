@@ -17,6 +17,12 @@ public class TourTheme {
 
     private Long themeId;
 
+    public TourTheme(Object o, Long id, Long tid) {
+        this.tourId = tid;
+        this.themeId=id;
+    }
+   
+
     public Long getId() {
         return id;
     }
