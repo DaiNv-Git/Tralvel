@@ -4,8 +4,11 @@ import app.travelstride.Model.Continents;
 import app.travelstride.Model.Destination;
 import app.travelstride.Model.Jpa.ContinentRepository;
 import app.travelstride.Model.Jpa.DestinationRepository;
+import app.travelstride.Model.dto.DestinationAll;
 import app.travelstride.Model.dto.DestinationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -93,5 +96,21 @@ public class DestinationService {
     public List<Destination> getAllDestination() {
         return destinationRepository.findAll();
     }
+    public Page<DestinationAll> searchDestinations(String search, Pageable pageable) {
+        Page<Destination> destinations = destinationRepository.searchDestinations(search, pageable);
 
+        return destinations.map(d -> {
+            Continents continent = continentRepository.findById(d.getContinentId()).orElse(null);
+            String continentName = (continent != null) ? continent.getContinentName() : "Unknown";
+
+            return new DestinationAll(
+                    d.getId(),
+                    d.getDestination(),
+                    continentName,
+                    d.getImageUrl(),
+                    d.getDescription(),
+                    d.getShow()
+            );
+        });
+    }
 }

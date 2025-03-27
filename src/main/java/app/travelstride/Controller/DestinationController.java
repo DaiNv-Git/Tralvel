@@ -4,12 +4,11 @@ import app.travelstride.Model.Continents;
 import app.travelstride.Model.Destination;
 import app.travelstride.Model.Jpa.ContinentRepository;
 import app.travelstride.Model.Jpa.DestinationRepository;
-import app.travelstride.Model.dto.ContinentResponseDTO;
-import app.travelstride.Model.dto.ContinentWithDestinationsDTO;
-import app.travelstride.Model.dto.DestinationDTO;
-import app.travelstride.Model.dto.DestinationResponseDTO;
+import app.travelstride.Model.dto.*;
 import app.travelstride.Service.DestinationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -83,7 +82,7 @@ public class DestinationController {
     }
 
 
-    // ✅ Get All
+  
     @GetMapping
     public List<Map<String, Object>> getAll() {
         return destinationService.getAllDestinations();
@@ -145,5 +144,13 @@ public class DestinationController {
     @GetMapping("/continent/{continentId}")
     public List<Destination> getByContinent(@PathVariable int continentId) {
         return destinationService.getByContinent(continentId);
+    }
+
+    @GetMapping("/searchAdmin")
+    public Page<DestinationAll> searchDestinations(
+            @RequestParam(required = false) String search,
+            Pageable pageable
+    ) {
+        return destinationService.searchDestinations(search, pageable);
     }
 }

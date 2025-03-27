@@ -2,6 +2,8 @@ package app.travelstride.Model.Jpa;
 
 import app.travelstride.Model.Destination;
 import app.travelstride.Model.dto.DestinationResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,4 +37,8 @@ public interface DestinationRepository extends JpaRepository<Destination, Long> 
 """)
     List<Destination> findByTourId(@Param("tourId") Long tourId);
     List<Destination> findByContinentIdIn(List<Long> continentIds);
+
+    @Query("SELECT d FROM Destination d JOIN Continents c ON d.continentId = c.continentId " +
+            "WHERE (:search IS NULL OR LOWER(d.destination) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<Destination> searchDestinations(String search, Pageable pageable);
 }
