@@ -11,6 +11,12 @@ public class DestinationDTO {
     private String imageUrl;
     private  Boolean isShow;
 
+    public DestinationDTO(Long id, String destination, String description, String imageUrl) {
+    }
+
+    public DestinationDTO() {
+    }
+
     public Boolean getShow() {
         return isShow;
     }

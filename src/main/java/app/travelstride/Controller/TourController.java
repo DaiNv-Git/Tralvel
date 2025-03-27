@@ -149,6 +149,30 @@ public class TourController {
         return "Create success!";
     }
 
+    @GetMapping("/searchAdmin")
+    public ResponseEntity<Map<String, Object>> searchTour(
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Tour> tourPage;
+
+        if (name == null || name.isEmpty()) {
+            tourPage = tourRepository.findAll(pageable);
+        } else {
+            tourPage = tourRepository.findByNameContainingIgnoreCase(name, pageable);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("tours", tourPage.getContent());
+        response.put("currentPage", tourPage.getNumber());
+        response.put("totalPages", tourPage.getTotalPages());
+        response.put("totalItems", tourPage.getTotalElements());
+
+        return ResponseEntity.ok(response);
+    }
+
 
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateTour(

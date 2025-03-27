@@ -89,5 +89,5 @@ public interface TourRepository  extends JpaRepository<Tour, Long> {
 
 
     List<Tour> findByIsTrending(Integer isTrending);
-
+    Page<Tour> findByNameContainingIgnoreCase(String name, Pageable pageable);
 }
