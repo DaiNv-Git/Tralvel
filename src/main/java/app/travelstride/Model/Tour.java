@@ -19,7 +19,8 @@ public class Tour {
     private String name;
 
     private String lodgingLevel;
-    
+    private int lodgingLevelNumber;
+
     private String video;
     
     private int  totalDay;
@@ -27,14 +28,19 @@ public class Tour {
     private String tripType;
 
     private String physicalLevel;
+    private int physicalLevelNumber;
 
     private String tripPace;
+    private int tripPaceNumber;
 
     @Lob
     private String highlights;
 
     @Lob
     private String tripAbout;
+    private String flyAndTransport;
+    private String startCity;
+    private String endCity;
 
     @Lob
     private String itineraryFocus;
@@ -54,6 +60,54 @@ public class Tour {
     private int isTrending;
     private String price;
     private String oldPrice;
+
+    public int getLodgingLevelNumber() {
+        return lodgingLevelNumber;
+    }
+
+    public void setLodgingLevelNumber(int lodgingLevelNumber) {
+        this.lodgingLevelNumber = lodgingLevelNumber;
+    }
+
+    public int getPhysicalLevelNumber() {
+        return physicalLevelNumber;
+    }
+
+    public void setPhysicalLevelNumber(int physicalLevelNumber) {
+        this.physicalLevelNumber = physicalLevelNumber;
+    }
+
+    public int getTripPaceNumber() {
+        return tripPaceNumber;
+    }
+
+    public void setTripPaceNumber(int tripPaceNumber) {
+        this.tripPaceNumber = tripPaceNumber;
+    }
+
+    public String getFlyAndTransport() {
+        return flyAndTransport;
+    }
+
+    public void setFlyAndTransport(String flyAndTransport) {
+        this.flyAndTransport = flyAndTransport;
+    }
+
+    public String getStartCity() {
+        return startCity;
+    }
+
+    public void setStartCity(String startCity) {
+        this.startCity = startCity;
+    }
+
+    public String getEndCity() {
+        return endCity;
+    }
+
+    public void setEndCity(String endCity) {
+        this.endCity = endCity;
+    }
 
     public String getVideo() {
         return video;
