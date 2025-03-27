@@ -44,6 +44,11 @@ public class Tour {
 
     @Lob
     private String itineraryFocus;
+    @Lob
+    private String tripIncludes;
+
+    @Lob
+    private String itinerary;
 
     private String groupSize;
 
@@ -60,6 +65,22 @@ public class Tour {
     private int isTrending;
     private String price;
     private String oldPrice;
+
+    public String getTripIncludes() {
+        return tripIncludes;
+    }
+
+    public void setTripIncludes(String tripIncludes) {
+        this.tripIncludes = tripIncludes;
+    }
+
+    public String getItinerary() {
+        return itinerary;
+    }
+
+    public void setItinerary(String itinerary) {
+        this.itinerary = itinerary;
+    }
 
     public int getLodgingLevelNumber() {
         return lodgingLevelNumber;
