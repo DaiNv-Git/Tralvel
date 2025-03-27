@@ -257,10 +257,24 @@ public class TourController {
             double overall = 0, value = 0, guide = 0, activities = 0, lodging = 0, transportation = 0, meals = 0;
             int countOverall = 0, countValue = 0, countGuide = 0, countActivities = 0, countLodging = 0, countTransportation = 0, countMeals = 0;
 
+            // Biến đếm số lượng đánh giá từ 1 sao đến 5 sao
+            int rating1 = 0, rating2 = 0, rating3 = 0, rating4 = 0, rating5 = 0, ratingUnrated = 0;
+
             for (Review review : reviews) {
                 if (review.getOverallRating() > 0) {
                     overall += review.getOverallRating();
                     countOverall++;
+
+                    // Phân loại đánh giá theo số sao
+                    int stars = (int) Math.round(review.getOverallRating());
+                    switch (stars) {
+                        case 1: rating1++; break;
+                        case 2: rating2++; break;
+                        case 3: rating3++; break;
+                        case 4: rating4++; break;
+                        case 5: rating5++; break;
+                        default: ratingUnrated++; break;
+                    }
                 }
                 if (review.getValueRating() > 0) {
                     value += review.getValueRating();
@@ -298,14 +312,13 @@ public class TourController {
             averageRatings.put("mealsRatingAvg", countMeals > 0 ? meals / countMeals : 0);
             averageRatings.put("totalReviews", total);
 
-            // Thêm số lượng từng loại review
-            averageRatings.put("countOverall", countOverall);
-            averageRatings.put("countValue", countValue);
-            averageRatings.put("countGuide", countGuide);
-            averageRatings.put("countActivities", countActivities);
-            averageRatings.put("countLodging", countLodging);
-            averageRatings.put("countTransportation", countTransportation);
-            averageRatings.put("countMeals", countMeals);
+            // Thêm số lượng đánh giá từng mức sao
+            averageRatings.put("rating1Star", rating1);
+            averageRatings.put("rating2Star", rating2);
+            averageRatings.put("rating3Star", rating3);
+            averageRatings.put("rating4Star", rating4);
+            averageRatings.put("rating5Star", rating5);
+            averageRatings.put("ratingUnrated", ratingUnrated);
         } else {
             averageRatings.put("message", "No reviews available");
         }
