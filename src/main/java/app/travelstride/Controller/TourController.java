@@ -104,7 +104,7 @@ public class TourController {
             tourImageRepository.saveAll(imageList);
         }
 
-        // ✅ Hoạt động
+
         if (request.getActivityIds() != null) {
             List<TourActivity> activities = request.getActivityIds().stream()
                     .map(aid -> new TourActivity(null, savedTour.getId(), aid))
@@ -112,7 +112,7 @@ public class TourController {
             tourActivityRepository.saveAll(activities);
         }
 
-        // ✅ Destination
+
         if (request.getDestinationIds() != null) {
             List<Destination> destinations = destinationRepository.findAllById(request.getDestinationIds());
             List<TourDestination> tourDestinations = destinations.stream()
@@ -121,7 +121,6 @@ public class TourController {
             tourDestinationRepository.saveAll(tourDestinations);
         }
 
-        // ✅ Interest
         if (request.getInterestIds() != null) {
             List<TourInterests> interests = request.getInterestIds().stream()
                     .map(iid -> new TourInterests(null, iid, savedTour.getId()))
@@ -129,7 +128,7 @@ public class TourController {
             tourInterestsRepository.saveAll(interests);
         }
 
-        // ✅ Style
+
         if (request.getStyleIds() != null) {
             List<TourStyle> styles = request.getStyleIds().stream()
                     .map(sid -> new TourStyle(null, savedTour.getId(), sid))
@@ -137,7 +136,6 @@ public class TourController {
             tourStyleRepository.saveAll(styles);
         }
 
-        // ✅ Theme
         if (request.getThemeIds() != null && request.getThemes() != null) {
             List<TourTheme> themeList = new ArrayList<>();
             for (int i = 0; i < request.getThemeIds().size(); i++) {
@@ -145,7 +143,6 @@ public class TourController {
             }
             tourThemeRepository.saveAll(themeList);
         }
-
         return "Create success!";
     }
 
@@ -374,6 +371,43 @@ public class TourController {
         return data;
     }
 
+    @GetMapping("/adminDetail/{id}")
+    public Map<String, Object> getDetail(@PathVariable Long id) {
+        Map<String, Object> data = new HashMap<>();
+
+        Optional<Tour> tourOpt = tourRepository.findById(id);
+        if (tourOpt.isEmpty()) {
+            data.put("message", "Tour not found");
+            return data;
+        }
+
+        Tour tour = tourOpt.get();
+
+        // Lấy thông tin từ các bảng liên quan
+        Map<String, Object> tourData = new HashMap<>();
+        tourData.put("tour", tour);
+        tourData.put("images", tourImageRepository.findImagesByTourIds(Collections.singletonList(id)));
+        tourData.put("themes", themeRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("activities", activityRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("interest", interestsRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("styles", stylesRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("logistics", logisticsRepository.findByTourId(id));
+
+        // Lấy danh sách điểm đến (Destinations)
+        List<Destination> destinations = destinationRepository.findByTourId(id);
+        List<DestinationDTO1> destinationDTOs = destinations.stream()
+                .map(d -> new DestinationDTO1(
+                        d.getId(),
+                        d.getDestination(),
+                        d.getContinentId(),
+                        d.getImageUrl(),
+                        d.getDescription()
+                )).collect(Collectors.toList());
+        tourData.put("destinations", destinationDTOs);
+
+        data.put("tourData", tourData);
+        return data;
+    }
 
 
     @GetMapping("/search")
