@@ -237,7 +237,7 @@ public class TourController {
 
         return ResponseEntity.ok("Tour deleted successfully");
     }
- 
+
 
     @GetMapping("/getFull/{id}")
     public Map<String, Object> getFullTour(@PathVariable Long id) {
@@ -255,24 +255,57 @@ public class TourController {
         Map<String, Object> averageRatings = new HashMap<>();
         if (!reviews.isEmpty()) {
             double overall = 0, value = 0, guide = 0, activities = 0, lodging = 0, transportation = 0, meals = 0;
+            int countOverall = 0, countValue = 0, countGuide = 0, countActivities = 0, countLodging = 0, countTransportation = 0, countMeals = 0;
+
             for (Review review : reviews) {
-                overall += review.getOverallRating();
-                value += review.getValueRating();
-                guide += review.getGuideRating();
-                activities += review.getActivitiesRating();
-                lodging += review.getLodgingRating();
-                transportation += review.getTransportationRating();
-                meals += review.getMealsRating();
+                if (review.getOverallRating() > 0) {
+                    overall += review.getOverallRating();
+                    countOverall++;
+                }
+                if (review.getValueRating() > 0) {
+                    value += review.getValueRating();
+                    countValue++;
+                }
+                if (review.getGuideRating() > 0) {
+                    guide += review.getGuideRating();
+                    countGuide++;
+                }
+                if (review.getActivitiesRating() > 0) {
+                    activities += review.getActivitiesRating();
+                    countActivities++;
+                }
+                if (review.getLodgingRating() > 0) {
+                    lodging += review.getLodgingRating();
+                    countLodging++;
+                }
+                if (review.getTransportationRating() > 0) {
+                    transportation += review.getTransportationRating();
+                    countTransportation++;
+                }
+                if (review.getMealsRating() > 0) {
+                    meals += review.getMealsRating();
+                    countMeals++;
+                }
             }
+
             int total = reviews.size();
-            averageRatings.put("overallRatingAvg", overall / total);
-            averageRatings.put("valueRatingAvg", value / total);
-            averageRatings.put("guideRatingAvg", guide / total);
-            averageRatings.put("activitiesRatingAvg", activities / total);
-            averageRatings.put("lodgingRatingAvg", lodging / total);
-            averageRatings.put("transportationRatingAvg", transportation / total);
-            averageRatings.put("mealsRatingAvg", meals / total);
+            averageRatings.put("overallRatingAvg", countOverall > 0 ? overall / countOverall : 0);
+            averageRatings.put("valueRatingAvg", countValue > 0 ? value / countValue : 0);
+            averageRatings.put("guideRatingAvg", countGuide > 0 ? guide / countGuide : 0);
+            averageRatings.put("activitiesRatingAvg", countActivities > 0 ? activities / countActivities : 0);
+            averageRatings.put("lodgingRatingAvg", countLodging > 0 ? lodging / countLodging : 0);
+            averageRatings.put("transportationRatingAvg", countTransportation > 0 ? transportation / countTransportation : 0);
+            averageRatings.put("mealsRatingAvg", countMeals > 0 ? meals / countMeals : 0);
             averageRatings.put("totalReviews", total);
+
+            // Thêm số lượng từng loại review
+            averageRatings.put("countOverall", countOverall);
+            averageRatings.put("countValue", countValue);
+            averageRatings.put("countGuide", countGuide);
+            averageRatings.put("countActivities", countActivities);
+            averageRatings.put("countLodging", countLodging);
+            averageRatings.put("countTransportation", countTransportation);
+            averageRatings.put("countMeals", countMeals);
         } else {
             averageRatings.put("message", "No reviews available");
         }
@@ -288,6 +321,7 @@ public class TourController {
         tourData.put("averageRatings", averageRatings);
         tourData.put("logistics", logisticsRepository.findByTourId(id));
         tourData.put("destinations", destinationRepository.findByTourId(id));
+
         List<Destination> destinations = destinationRepository.findByTourId(id);
         List<DestinationDTO1> destinationDTOs = destinations.stream()
                 .map(d -> new DestinationDTO1(
@@ -296,14 +330,14 @@ public class TourController {
                         d.getContinentId(),
                         d.getImageUrl(),
                         d.getDescription()
-                      
                 )).collect(Collectors.toList());
         tourData.put("destinations", destinationDTOs);
 
         data.put("tourData", tourData);
         return data;
     }
-    
+
+
 
     @GetMapping("/search")
     public ResponseEntity<?> searchTours(
