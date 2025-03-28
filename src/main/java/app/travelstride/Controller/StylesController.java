@@ -35,9 +35,37 @@ public class StylesController {
     }
 
     @PutMapping("/{id}")
-    public Styles update(@PathVariable Long id, @RequestBody Styles styles) {
-        return stylesService.update(id, styles);
+    public ResponseEntity<?> update(@PathVariable Long id,
+                                    @RequestParam("name") String name,
+                                    @RequestParam(value = "file", required = false) MultipartFile file) {
+        try {
+            Styles old = stylesRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Not found"));
+
+            old.setName(name);
+
+            if (file != null && !file.isEmpty()) {
+                String uploadDir = "uploads/images/";
+                File dir = new File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                Path filePath = Paths.get(uploadDir, fileName);
+                Files.write(filePath, file.getBytes());
+
+                String imageUrl = "/images/" + fileName;
+                old.setImageUrl(imageUrl);
+            }
+
+            stylesRepository.save(old);
+            return ResponseEntity.ok(old);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update failed");
+        }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
@@ -50,7 +78,7 @@ public class StylesController {
     public ResponseEntity<?> createStyle(@RequestParam("name") String name,
                                          @RequestParam("file") MultipartFile file) {
         try {
-            // Nên upload vào folder ngoài target/resources
+        
             String uploadDir = "uploads/images/";
             File dir = new File(uploadDir);
             if (!dir.exists()) {

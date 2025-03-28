@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -124,13 +125,16 @@ public class DestinationController {
 
 
     // ✅ Update
-    @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Long id,
-                                         @RequestPart("dto") DestinationDTO dto,
-                                         @RequestPart(value = "image", required = false) MultipartFile image) {
-        destinationService.updateDestination(id, dto, image);
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> update(
+            @PathVariable Long id,
+            @RequestPart("dto") DestinationDTO dto,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+
+         destinationService.updateDestination(id, dto, image);
         return ResponseEntity.ok("Updated successfully");
     }
+
 
 
     // ✅ Delete
