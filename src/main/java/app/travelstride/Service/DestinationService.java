@@ -8,7 +8,9 @@ import app.travelstride.Model.dto.DestinationAll;
 import app.travelstride.Model.dto.DestinationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,12 +65,20 @@ public class DestinationService {
         dest.setDestination(dto.getDestination());
         dest.setContinentId(dto.getContinentId());
         dest.setDescription(dto.getDescription());
+        dest.setShow(dto.getShow());
 
         if (image != null && !image.isEmpty()) {
             try {
                 String uploadDir = "uploads/images/";
                 File dir = new File(uploadDir);
-                if (!dir.exists()) {
+                // Xóa tất cả các tệp cũ trong thư mục
+                if (dir.exists()) {
+                    for (File file : dir.listFiles()) {
+                        if (file.isFile()) {
+                            file.delete();
+                        }
+                    }
+                } else {
                     dir.mkdirs();
                 }
                 String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
@@ -97,11 +107,17 @@ public class DestinationService {
         return destinationRepository.findAll();
     }
     public Page<DestinationAll> searchDestinations(String search, Pageable pageable) {
-        Page<Destination> destinations = destinationRepository.searchDestinations(search, pageable);
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                pageable.getSort().and(Sort.by(Sort.Direction.DESC, "id")) // Thêm sorting ID DESC
+        );
+        Page<Destination> destinations = destinationRepository.searchDestinations(search, sortedPageable);
 
         return destinations.map(d -> {
             Continents continent = continentRepository.findById(d.getContinentId()).orElse(null);
             String continentName = (continent != null) ? continent.getContinentName() : "Unknown";
+            Long continentId = (continent != null) ? continent.getContinentId() : 0;
 
             return new DestinationAll(
                     d.getId(),
@@ -109,7 +125,8 @@ public class DestinationService {
                     continentName,
                     d.getImageUrl(),
                     d.getDescription(),
-                    d.getShow()
+                    d.getShow(),
+                    continentId
             );
         });
     }

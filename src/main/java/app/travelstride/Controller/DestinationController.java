@@ -128,10 +128,17 @@ public class DestinationController {
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> update(
             @PathVariable Long id,
-            @RequestPart("dto") DestinationDTO dto,
+            @RequestParam("destination") String destination,
+            @RequestParam("description") String description,
+            @RequestParam("continentId") Long continentId,
+            @RequestParam("isShow") boolean isShow,
             @RequestPart(value = "image", required = false) MultipartFile image) {
-
-         destinationService.updateDestination(id, dto, image);
+        DestinationDTO dto = new DestinationDTO();
+        dto.setDestination(destination);
+        dto.setDescription(description);
+        dto.setShow(isShow);
+        dto.setContinentId(continentId);
+        destinationService.updateDestination(id, dto, image);
         return ResponseEntity.ok("Updated successfully");
     }
 
