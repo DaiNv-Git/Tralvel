@@ -37,23 +37,30 @@ public class StylesController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @RequestParam("name") String name,
-                                    @RequestParam(value = "file", required = false) MultipartFile file) {
+                                    @RequestParam(value = "image", required = false) MultipartFile image) {
         try {
             Styles old = stylesRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Not found"));
 
             old.setName(name);
 
-            if (file != null && !file.isEmpty()) {
+            if (image != null && !image.isEmpty()) {
                 String uploadDir = "uploads/images/";
                 File dir = new File(uploadDir);
-                if (!dir.exists()) {
+                // Xóa tất cả các tệp cũ trong thư mục
+                if (dir.exists()) {
+                    for (File subFile : dir.listFiles()) {
+                        if (subFile.isFile()) {
+                            subFile.delete();
+                        }
+                    }
+                } else {
                     dir.mkdirs();
                 }
 
-                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
                 Path filePath = Paths.get(uploadDir, fileName);
-                Files.write(filePath, file.getBytes());
+                Files.write(filePath, image.getBytes());
 
                 String imageUrl = "/images/" + fileName;
                 old.setImageUrl(imageUrl);
