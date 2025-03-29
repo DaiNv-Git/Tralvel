@@ -2,7 +2,7 @@ name: TravelStride CI/CD
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main, dev ,product]
 
 jobs:
   deploy:
