@@ -2,7 +2,7 @@ name: TravelStride CI/CD
 
 on:
   push:
-    branches: [ main, dev,product ]
+    branches: [ main, dev ]
 
 jobs:
   deploy:
@@ -17,8 +17,15 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            echo "== SSH into VPS and Pull latest code =="
+            echo "== Check current working directory =="
+            pwd
+
+            # Navigate to the correct directory
             cd ~/Travel/BE/Tralvel
+
+            # Ensure the JAR exists before continuing
+            echo "== Check if JAR file exists in target/ =="
+            ls target/
 
             echo "== Pull latest code =="
             git pull origin product
@@ -26,23 +33,24 @@ jobs:
             echo "== Build new JAR =="
             mvn clean package -U -DskipTests
 
+            # Check if the JAR file exists after build
+            if [ ! -f target/TravelStride-0.0.1-SNAPSHOT.jar ]; then
+              echo "Error: JAR file not found!"
+              exit 1
+            fi
+
             echo "== Backup old JAR =="
             mkdir -p backup
-            if [ -f target/travel-app-0.0.1-SNAPSHOT.jar ]; then
-              cp target/travel-app-0.0.1-SNAPSHOT.jar backup/travel-app-$(date +"%Y%m%d%H%M%S").jar
-            fi
+            cp target/TravelStride-0.0.1-SNAPSHOT.jar backup/TravelStride-$(date +"%Y%m%d%H%M%S").jar
 
             echo "== Restart travel-app using PM2 =="
             pm2 stop travel-app || true
             pm2 delete travel-app || true
-            pm2 start target/travel-app-0.0.1-SNAPSHOT.jar --name travel-app -- --server.port=3082
+            pm2 start target/TravelStride-0.0.1-SNAPSHOT.jar --name travel-app -- --server.port=3082
 
       - name: Notify Telegram Success
         run: |
-          deploy_time=$(date +"%Y-%m-%d %H:%M:%S")
-          server_info="Server IP: 14.225.205.10\nDirectory: ~/Travel/BE/Tralvel"
-          
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="✅ Dai Dev Try CI/CD Build and Deploy thành công trên *${{ github.ref_name }}* 🚀\n\nDeploy Time: ${deploy_time}\n${server_info}" \
+          -d text="✅ Dai Dev Try CI/CD Build and Deploy thành công trên *${{ github.ref_name }}* 🚀" \
           -d parse_mode=Markdown
