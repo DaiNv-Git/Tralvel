@@ -21,7 +21,7 @@ import java.util.List;
 @CrossOrigin("*")  // Cho phép gọi từ FE (React, Postman)
 public class ContinentController {
 
-     @Autowired
+    @Autowired
     private ContinentRepository continentRepository;
 
     @Autowired
@@ -40,7 +40,7 @@ public class ContinentController {
                                              @RequestParam("file") MultipartFile file) {
         try {
             // Tạo thư mục uploads nếu chưa có
-            String uploadDir = "uploads/images/";
+            String uploadDir =  System.getProperty("user.dir").substring(0, System.getProperty("user.dir").lastIndexOf("/")) + "/images/";
             File dir = new File(uploadDir);
             if (!dir.exists()) {
                 dir.mkdirs();
@@ -81,7 +81,7 @@ public class ContinentController {
 
             if (file != null && !file.isEmpty()) {
                 // Xử lý upload ảnh mới
-                String uploadDir = "uploads/images/";
+                String uploadDir =  System.getProperty("user.dir").substring(0, System.getProperty("user.dir").lastIndexOf("/")) + "/images/";
                 File dir = new File(uploadDir);
                 if (!dir.exists()) {
                     dir.mkdirs();

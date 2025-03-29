@@ -70,7 +70,7 @@ public class DestinationService {
 
         if (image != null && !image.isEmpty()) {
             try {
-                String uploadDir = "uploads/images/";
+                String uploadDir =  System.getProperty("user.dir").substring(0, System.getProperty("user.dir").lastIndexOf("/")) + "/images/";
                 File dir = new File(uploadDir);
                 // Xóa tất cả các tệp cũ trong thư mục
                 if (dir.exists()) {
