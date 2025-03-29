@@ -21,7 +21,7 @@ jobs:
             cd ~/Travel/BE/Tralvel
 
             echo "== Pull latest code =="
-            git pull origin main
+            git pull origin product
 
             echo "== Build new JAR =="
             mvn clean package -U -DskipTests
