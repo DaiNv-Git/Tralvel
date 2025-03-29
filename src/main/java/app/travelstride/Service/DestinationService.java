@@ -51,6 +51,7 @@ public class DestinationService {
         Destination dest = new Destination();
         dest.setDestination(dto.getDestination());
         dest.setContinentId(dto.getContinentId());
+        dest.setDescription(dto.getDescription());
         dest.setImageUrl(dto.getImageUrl());  // ✅ Lưu đường dẫn ảnh vào DB
         dest.setShow(dto.getShow());  // ✅ Lưu đường dẫn ảnh vào DB
         destinationRepository.save(dest);
