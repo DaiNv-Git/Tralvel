@@ -2,7 +2,7 @@ name: TravelStride CI/CD
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main, dev,product ]
 
 jobs:
   deploy:
@@ -17,7 +17,8 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            cd .travel/Tralvel/
+            echo "== SSH into VPS and Pull latest code =="
+            cd ~/Travel/BE/Tralvel
 
             echo "== Pull latest code =="
             git pull origin main
@@ -27,18 +28,21 @@ jobs:
 
             echo "== Backup old JAR =="
             mkdir -p backup
-            if [ -f target/TravelStride-0.0.1-SNAPSHOT.jar ]; then
-              cp target/TravelStride-0.0.1-SNAPSHOT.jar backup/TravelStride-$(date +"%Y%m%d%H%M%S").jar
+            if [ -f target/travel-app-0.0.1-SNAPSHOT.jar ]; then
+              cp target/travel-app-0.0.1-SNAPSHOT.jar backup/travel-app-$(date +"%Y%m%d%H%M%S").jar
             fi
 
-            echo "== Restart PM2 app =="
-            cd target/
+            echo "== Restart travel-app using PM2 =="
+            pm2 stop travel-app || true
             pm2 delete travel-app || true
-            pm2 start java --name travel-app -- -jar TravelStride-0.0.1-SNAPSHOT.jar --server.port=3082
+            pm2 start target/travel-app-0.0.1-SNAPSHOT.jar --name travel-app -- --server.port=3082
 
       - name: Notify Telegram Success
         run: |
+          deploy_time=$(date +"%Y-%m-%d %H:%M:%S")
+          server_info="Server IP: 14.225.205.10\nDirectory: ~/Travel/BE/Tralvel"
+          
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
           -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="✅ Dai Dev Try CI/CD Build and Deploy thành công trên *${{ github.ref_name }}* 🚀" \
+          -d text="✅ Dai Dev Try CI/CD Build and Deploy thành công trên *${{ github.ref_name }}* 🚀\n\nDeploy Time: ${deploy_time}\n${server_info}" \
           -d parse_mode=Markdown
