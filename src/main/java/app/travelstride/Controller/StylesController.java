@@ -87,11 +87,11 @@ public class StylesController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        stylesService.delete(id);
         Styles old = stylesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Record not found with id: " + id));
-        
         CommonUpload.deleteOldImage(old.getImageUrl());
+        stylesService.delete(id);
+       
         return ResponseEntity.ok("Deleted");
     }
 
