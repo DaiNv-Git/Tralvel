@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/home")
 public class HomeController {
+    @Autowired
+    private BannerIamgeRepository BannerIamgeRepository;
 
     @Autowired
     private BannerService bannerService;
@@ -90,10 +92,7 @@ public class HomeController {
         BannerGroup existing = bannerService.getBannerById(id);
         existing.setTitle(title);
         existing.setSubTitle(subTitle);
-
-        // Xóa ảnh cũ
-        existing.getImages().clear();
-
+        BannerIamgeRepository.deleteAll(existing.getImages());
         // Thêm ảnh mới nếu có upload
         if (files != null) {
             int sequence = 1;
@@ -104,7 +103,6 @@ public class HomeController {
                 image.setImageUrl(imageUrl);
                 image.setSequence(sequence++);
                 image.setBannerGroup(existing);
-
                 existing.getImages().add(image);
             }
         }
