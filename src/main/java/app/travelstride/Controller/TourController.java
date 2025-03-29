@@ -24,6 +24,7 @@ import app.travelstride.Model.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -218,6 +219,18 @@ public class TourController {
 
         // ✅ Update Images: Xoá cũ -> Thêm mới
         if (images != null && images.length > 0) {
+            List<TourImage> oldImages = tourImageRepository.findByTourId(id);
+            for (TourImage oldImage : oldImages) {
+                // Lấy URL ảnh cũ (ví dụ: /images/{fileName})
+                String imagePath = "/home/user/Travel/BE/images/" + oldImage.getUrl().replace("/images/", "");
+                File oldFile = new File(imagePath);
+                if (oldFile.exists()) {
+                    boolean isDeleted = oldFile.delete(); // Xóa ảnh trên ổ cứng
+                    if (!isDeleted) {
+                        throw new RuntimeException("Failed to delete old image file: " + oldImage.getUrl());
+                    }
+                }
+            }
             tourImageRepository.deleteByTourId(id);
             List<TourImage> imageList = new ArrayList<>();
             for (MultipartFile file : images) {

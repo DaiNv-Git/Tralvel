@@ -10,6 +10,7 @@ import java.util.List;
 @Repository
 public interface TourImageRepository extends JpaRepository<TourImage, Long> {
     void deleteByTourId(Long id);
+    List<TourImage> findByTourId(Long id);
     @Query("SELECT ti FROM TourImage ti WHERE ti.tourId IN :tourIds")
     List<TourImage> findImagesByTourIds(@Param("tourIds") List<Long> tourIds);
 

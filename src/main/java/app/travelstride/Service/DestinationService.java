@@ -74,13 +74,22 @@ public class DestinationService {
                 File dir = new File(uploadDir);
                 // Xóa tất cả các tệp cũ trong thư mục
                 if (dir.exists()) {
-                    for (File file : dir.listFiles()) {
-                        if (file.isFile()) {
-//                            file.delete();
+                    String oldImageName = dest.getImageUrl(); // Giả sử bạn lưu tên file trong trường `imageName` của `old`
+
+                    // Kiểm tra tên ảnh cũ có tồn tại và xóa tệp cũ
+                    if (oldImageName != null && !oldImageName.isEmpty()) {
+                        // Loại bỏ "/images/" để lấy đúng tên tệp từ tên ảnh cũ
+                        String oldFileName = oldImageName.replace("/images/", "");
+                        File oldFile = new File(uploadDir + oldFileName);
+                        if (oldFile.exists()) {
+                            boolean isDeleted = oldFile.delete(); // Xóa tệp cũ
+                            if (!isDeleted) {
+                                throw new RuntimeException("Failed to delete old image file: " + oldFileName);
+                            }
                         }
                     }
                 } else {
-                    dir.mkdirs();
+                    dir.mkdirs(); // Tạo thư mục nếu chưa có
                 }
                 String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
                 Path filePath = Paths.get(uploadDir, fileName);
