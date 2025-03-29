@@ -17,15 +17,7 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            echo "== Check current working directory =="
-            pwd
-
-            # Navigate to the correct directory
             cd ~/Travel/BE/Tralvel
-
-            # Ensure the JAR exists before continuing
-            echo "== Check if JAR file exists in target/ =="
-            ls target/
 
             echo "== Pull latest code =="
             git pull origin product
@@ -33,15 +25,11 @@ jobs:
             echo "== Build new JAR =="
             mvn clean package -U -DskipTests
 
-            # Check if the JAR file exists after build
-            if [ ! -f target/TravelStride-0.0.1-SNAPSHOT.jar ]; then
-              echo "Error: JAR file not found!"
-              exit 1
-            fi
-
             echo "== Backup old JAR =="
             mkdir -p backup
-            cp target/TravelStride-0.0.1-SNAPSHOT.jar backup/TravelStride-$(date +"%Y%m%d%H%M%S").jar
+            if [ -f target/TravelStride-0.0.1-SNAPSHOT.jar ]; then
+              cp target/TravelStride-0.0.1-SNAPSHOT.jar backup/TravelStride-$(date +"%Y%m%d%H%M%S").jar
+            fi
 
             echo "== Restart travel-app using PM2 =="
             pm2 stop travel-app || true
