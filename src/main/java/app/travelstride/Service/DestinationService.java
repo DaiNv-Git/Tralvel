@@ -76,7 +76,7 @@ public class DestinationService {
                 if (dir.exists()) {
                     for (File file : dir.listFiles()) {
                         if (file.isFile()) {
-                            file.delete();
+//                            file.delete();
                         }
                     }
                 } else {

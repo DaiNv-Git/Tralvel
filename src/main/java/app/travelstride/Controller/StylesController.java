@@ -52,7 +52,7 @@ public class StylesController {
                 if (dir.exists()) {
                     for (File subFile : dir.listFiles()) {
                         if (subFile.isFile()) {
-                            subFile.delete();
+//                            subFile.delete();
                         }
                     }
                 } else {
