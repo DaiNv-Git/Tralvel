@@ -21,7 +21,7 @@ import java.util.List;
 @CrossOrigin("*")  // Cho phép gọi từ FE (React, Postman)
 public class ContinentController {
 
-    @Autowired
+     @Autowired
     private ContinentRepository continentRepository;
 
     @Autowired
