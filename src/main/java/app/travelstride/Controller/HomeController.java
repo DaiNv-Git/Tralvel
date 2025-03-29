@@ -6,20 +6,13 @@ import app.travelstride.Model.Jpa.*;
 import app.travelstride.Model.dto.DestinationResponse;
 import app.travelstride.Model.dto.HomePageResponse;
 import app.travelstride.Service.BannerService;
-import app.travelstride.Service.DestinationService;
-import app.travelstride.Service.StylesService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.Banner;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -90,24 +83,47 @@ public class HomeController {
                                     @RequestParam(value = "subTitle", required = false) String subTitle,
                                     @RequestParam(value = "files", required = false) List<MultipartFile> files) throws IOException, IOException {
 
-        BannerGroup existing = bannerService.getBannerById(id);
-        existing.setTitle(title);
-        existing.setSubTitle(subTitle);
-        BannerIamgeRepository.deleteAll(existing.getImages());
-        deleteOldImages(existing);
-        if (files != null) {
-            int sequence = 1;
-            for (MultipartFile file : files) {
-                String imageUrl = commonUpload.saveImage(file);
-                BannerImage image = new BannerImage();
-                image.setImageUrl(imageUrl);
-                image.setSequence(sequence++);
-                image.setBannerGroup(existing);
-                existing.getImages().add(image);
-            }
+        BannerGroup org = bannerService.getBannerById(id);
+        org.setTitle(title);
+        org.setSubTitle(subTitle);
+        // Lấy danh sách tên file từ bannerImages
+        Set<String> existingImageUrls = org.getImages().stream()
+                .map(BannerImage::getImageUrl)
+                .collect(Collectors.toSet());
+
+        // Lấy danh sách tên file từ MultipartFile
+        Set<String> fileNames = files.stream()
+                .map(MultipartFile::getOriginalFilename)
+                .collect(Collectors.toSet());
+
+        // Xác định file nào chưa tồn tại trong BannerImage
+        List<MultipartFile> newFiles = files.stream()
+                .filter(file -> !existingImageUrls.contains(file.getOriginalFilename()))
+                .toList();
+
+        // Xác định BannerImage nào không có trong files
+        List<BannerImage> removedImages = org.getImages().stream()
+                .filter(image -> !fileNames.contains(image.getImageUrl()))
+                .toList();
+
+        org.getImages().removeAll(removedImages);
+//        removedImages.forEach(bannerImage ->  deleteOldImages(bannerImage));
+
+        int sequence = 1;
+        for (MultipartFile file : files) {
+            String imageUrl = commonUpload.saveImage(file);
+            BannerImage image = new BannerImage();
+            image.setImageUrl(imageUrl);
+            image.setSequence(sequence++);
+            image.setBannerGroup(org);
+            org.getImages().add(image);
         }
 
-        return bannerService.saveBanner(existing);
+        bannerService.saveBanner(org);
+
+        BannerIamgeRepository.deleteAll(removedImages);
+
+        return org;
     }
 
     @DeleteMapping("/banners/{id}")
