@@ -97,7 +97,7 @@
 				<configuration>
 					<filesets>
 						<fileset>
-							<directory>${project.basedir}/uploads</directory>
+							<directory>${project.basedir}/uploads.images</directory>
 							<followSymlinks>false</followSymlinks>
 						</fileset>
 					</filesets>

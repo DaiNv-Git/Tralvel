@@ -1,44 +1,44 @@
-#name: TravelStride CI/CD
-#
-#on:
-#  push:
-#    branches: [ main, dev ,product]
-#
-#jobs:
-#  deploy:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: SSH into VPS, pull code, build and restart
-#        uses: appleboy/ssh-action@v1.0.3
-#        with:
-#          host: ${{ secrets.SERVER_IP }}
-#          username: ${{ secrets.SERVER_USER }}
-#          port: ${{ secrets.SERVER_SSH_PORT }}
-#          password: ${{ secrets.SERVER_PASSWORD }}
-#          script: |
-#            cd ~/Travel/BE/Tralvel
-#
-#            echo "== Pull latest code =="
-#            git pull origin product
-#
-#            echo "== Build new JAR =="
-#            mvn clean package -U -DskipTests
-#
-#            echo "== Backup old JAR =="
-#            mkdir -p backup
-#            if [ -f target/TravelStride-0.0.1-SNAPSHOT.jar ]; then
-#              cp target/TravelStride-0.0.1-SNAPSHOT.jar backup/TravelStride-$(date +"%Y%m%d%H%M%S").jar
-#            fi
-#
-#            echo "== Restart travel-app using PM2 =="
-#            pm2 stop travel-app || true
-#          
-#            pm2 restart travel-app
-#
-#      - name: Notify Telegram Success
-#        run: |
-#          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
-#          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-#          -d text="✅ Dai Dev Try CI/CD Build and Deploy thành công trên *${{ github.ref_name }}* 🚀" \
-#          -d parse_mode=Markdown
+name: TravelStride CI/CD
+
+on:
+  push:
+    branches: [ main, dev ,product]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH into VPS, pull code, build and restart
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            cd ~/Travel/BE/Tralvel
+
+            echo "== Pull latest code =="
+            git pull origin product
+
+            echo "== Build new JAR =="
+            mvn clean package -U -DskipTests
+
+            echo "== Backup old JAR =="
+            mkdir -p backup
+            if [ -f target/TravelStride-0.0.1-SNAPSHOT.jar ]; then
+              cp target/TravelStride-0.0.1-SNAPSHOT.jar backup/TravelStride-$(date +"%Y%m%d%H%M%S").jar
+            fi
+
+            echo "== Restart travel-app using PM2 =="
+            pm2 stop travel-app || true
+
+            pm2 restart travel-app
+
+      - name: Notify Telegram Success
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+          -d text="✅ Dai Dev Try CI/CD Build and Deploy thành công trên *${{ github.ref_name }}* 🚀" \
+          -d parse_mode=Markdown
