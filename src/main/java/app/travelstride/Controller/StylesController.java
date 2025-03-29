@@ -37,13 +37,14 @@ public class StylesController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @RequestParam("name") String name,
+                                    @RequestParam("description") String description,
                                     @RequestParam(value = "image", required = false) MultipartFile image) {
         try {
             Styles old = stylesRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Not found"));
 
             old.setName(name);
-
+            old.setDescription(description);
             if (image != null && !image.isEmpty()) {
                 String uploadDir = "uploads/images/";
                 File dir = new File(uploadDir);
@@ -64,6 +65,7 @@ public class StylesController {
 
                 String imageUrl = "/images/" + fileName;
                 old.setImageUrl(imageUrl);
+             
             }
 
             stylesRepository.save(old);
@@ -83,6 +85,7 @@ public class StylesController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createStyle(@RequestParam("name") String name,
+                                         @RequestParam("description") String description,
                                          @RequestParam("image") MultipartFile image) {
         try {
         
@@ -101,6 +104,7 @@ public class StylesController {
             // Lưu vào DB
             Styles styles = new Styles();
             styles.setName(name);
+            styles.setDescription(description);
             styles.setImageUrl(imageUrl);
             stylesRepository.save(styles);
 
