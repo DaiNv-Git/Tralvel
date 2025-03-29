@@ -110,7 +110,7 @@ public class HomeController {
 //        removedImages.forEach(bannerImage ->  deleteOldImages(bannerImage));
 
         int sequence = 1;
-        for (MultipartFile file : files) {
+        for (MultipartFile file : newFiles) {
             String imageUrl = commonUpload.saveImage(file);
             BannerImage image = new BannerImage();
             image.setImageUrl(imageUrl);
