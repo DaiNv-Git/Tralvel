@@ -16,11 +16,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("http://14.225.205.10:3081", "https://toditour.com") // Cho phép cả local FE và domain chính
+        registry.addMapping("/**")  // Áp dụng cho tất cả endpoint
+                .allowedOrigins("*")  // React/Vue domain gọi lên
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true); // Nếu dùng cookie/token, cần bật lên
+                .allowedHeaders("*");
     }
-
 }
