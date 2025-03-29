@@ -98,7 +98,7 @@ public class DestinationController {
                                                     @RequestParam("image") MultipartFile image) {
         try {
             // ✅ Xử lý upload ảnh
-            String uploadDir =  System.getProperty("user.dir").substring(0, System.getProperty("user.dir").lastIndexOf("/")) + "/images/";
+            String uploadDir = "/home/user/Travel/BE/images/";
             File dir = new File(uploadDir);
             if (!dir.exists()) {
                 dir.mkdirs();

@@ -57,7 +57,7 @@ public class PostController {
             @RequestParam("cover") MultipartFile file) {
 
         try {
-            String uploadDir =  System.getProperty("user.dir").substring(0, System.getProperty("user.dir").lastIndexOf("/")) + "/images/";
+            String uploadDir = "/home/user/Travel/BE/images/";
             File dir = new File(uploadDir);
             if (!dir.exists()) {
                 dir.mkdirs();
