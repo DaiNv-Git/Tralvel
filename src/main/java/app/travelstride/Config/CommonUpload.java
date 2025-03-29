@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 @Component
 public class CommonUpload {
     public String saveImage(MultipartFile file) throws IOException {
-        String uploadDir = "uploads/images/";
+        String uploadDir = System.getProperty("user.dir").substring(0, System.getProperty("user.dir").lastIndexOf("/")) + "/images/";;
         File dir = new File(uploadDir);
         if (!dir.exists()) {
             dir.mkdirs();
