@@ -83,7 +83,7 @@ public class StylesController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createStyle(@RequestParam("name") String name,
-                                         @RequestParam("file") MultipartFile file) {
+                                         @RequestParam("image") MultipartFile image) {
         try {
         
             String uploadDir = "uploads/images/";
@@ -91,9 +91,9 @@ public class StylesController {
             if (!dir.exists()) {
                 dir.mkdirs();
             }
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
             Path filePath = Paths.get(uploadDir, fileName);
-            Files.write(filePath, file.getBytes());
+            Files.write(filePath, image.getBytes());
 
 
             String imageUrl = "/images/" + fileName;
