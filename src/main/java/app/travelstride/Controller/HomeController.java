@@ -48,6 +48,11 @@ public class HomeController {
         return bannerService.getAllBanners();
     }
 
+    @GetMapping("/banners/{id}")
+    public BannerGroup getBanners(@PathVariable Long id) {
+        return bannerRepository.findById(id).orElse(new BannerGroup());
+    }
+
 
     @PostMapping("/banners")
     public BannerGroup createBanner(@RequestParam("title") String title,
