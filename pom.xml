@@ -89,7 +89,6 @@
 	</dependencies>
 	<build>
 		<plugins>
-			<!-- Cấu hình maven-clean-plugin để bảo vệ thư mục uploads -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
@@ -97,14 +96,18 @@
 				<configuration>
 					<filesets>
 						<fileset>
-							<directory>${project.basedir}/uploads.images</directory>
+							<directory>${project.basedir}/uploads</directory>
 							<followSymlinks>false</followSymlinks>
+							<!-- Đảm bảo thư mục không bị xóa -->
+							<excludes>
+								<exclude>${project.basedir}/uploads/**</exclude>
+							</excludes>
 						</fileset>
 					</filesets>
 				</configuration>
 			</plugin>
 
-			<!-- Cấu hình maven-compiler-plugin cho việc biên dịch mã nguồn -->
+			<!-- Các plugin khác -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -115,7 +118,7 @@
 				</configuration>
 			</plugin>
 
-			<!-- Cấu hình spring-boot-maven-plugin -->
+			<!-- Spring Boot plugin -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
