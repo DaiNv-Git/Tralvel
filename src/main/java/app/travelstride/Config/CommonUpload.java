@@ -24,7 +24,7 @@ public class CommonUpload {
     }
     public static void deleteOldImage(String oldImageUrl) {
         if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
-            String uploadDir = "path/to/upload/directory/"; // Đặt đúng đường dẫn thư mục upload
+            String uploadDir = "/home/user/Travel/BE/images/"; // Đặt đúng đường dẫn thư mục upload
             String oldFileName = oldImageUrl.replace("/images/", "");
             File oldFile = new File(uploadDir + oldFileName);
 

@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,12 +94,11 @@ public class HomeController {
         existing.setTitle(title);
         existing.setSubTitle(subTitle);
         BannerIamgeRepository.deleteAll(existing.getImages());
-        // Thêm ảnh mới nếu có upload
+        deleteOldImages(existing);
         if (files != null) {
             int sequence = 1;
             for (MultipartFile file : files) {
                 String imageUrl = commonUpload.saveImage(file);
-
                 BannerImage image = new BannerImage();
                 image.setImageUrl(imageUrl);
                 image.setSequence(sequence++);
@@ -196,5 +196,21 @@ public class HomeController {
         result.put("data", tourDataList);
         return result;
     }
+    private void deleteOldImages(BannerGroup banner) {
+        if (banner.getImages() != null && !banner.getImages().isEmpty()) {
+            String uploadDir = "/home/user/Travel/BE/images/"; // Thay bằng đường dẫn thực tế
 
+            for (BannerImage image : banner.getImages()) {
+                String oldFileName = image.getImageUrl().replace("/images/", "");
+                File oldFile = new File(uploadDir + oldFileName);
+
+                if (oldFile.exists() && !oldFile.delete()) {
+                    System.err.println("Failed to delete old image file: " + oldFileName);
+                }
+            }
+
+            BannerIamgeRepository.deleteAll(banner.getImages()); // Xóa bản ghi ảnh trong DB
+            banner.getImages().clear(); // Xóa danh sách ảnh cũ trong entity
+        }
+    }
 }
