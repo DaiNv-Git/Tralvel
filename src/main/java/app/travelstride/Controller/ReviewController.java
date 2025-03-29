@@ -1,5 +1,6 @@
 package app.travelstride.Controller;
 
+import app.travelstride.Config.CommonUpload;
 import app.travelstride.Model.Review;
 import app.travelstride.Service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class ReviewController {
     public ResponseEntity<Page<Review>> searchReviews(
             @RequestParam(required = false) Long tourId,
             Pageable pageable) {
+        
         Page<Review> reviews = reviewService.getReviews(tourId, pageable);
         return ResponseEntity.ok(reviews);
     }
@@ -53,6 +55,8 @@ public class ReviewController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);
+        reviewService.deleteReview(id);
+        
         return ResponseEntity.noContent().build();
     }
 }

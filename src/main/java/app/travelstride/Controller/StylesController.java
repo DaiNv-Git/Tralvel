@@ -1,5 +1,6 @@
 package app.travelstride.Controller;
 
+import app.travelstride.Config.CommonUpload;
 import app.travelstride.Model.Jpa.StylesRepository;
 import app.travelstride.Model.Styles;
 import app.travelstride.Service.StylesService;
@@ -51,7 +52,6 @@ public class StylesController {
                 // Xóa tất cả các tệp cũ trong thư mục
                 if (dir.exists()) {
                     String oldImageName = old.getImageUrl(); // Giả sử bạn lưu tên file trong trường `imageName` của `old`
-
                     // Kiểm tra tên ảnh cũ có tồn tại và xóa tệp cũ
                     if (oldImageName != null && !oldImageName.isEmpty()) {
                         // Loại bỏ "/images/" để lấy đúng tên tệp từ tên ảnh cũ
@@ -88,6 +88,10 @@ public class StylesController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         stylesService.delete(id);
+        Styles old = stylesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Record not found with id: " + id));
+        
+        CommonUpload.deleteOldImage(old.getImageUrl());
         return ResponseEntity.ok("Deleted");
     }
 
@@ -122,5 +126,5 @@ public class StylesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed");
         }
     }
-
+ 
 }
