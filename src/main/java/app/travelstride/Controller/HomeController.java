@@ -107,7 +107,7 @@ public class HomeController {
                 .toList();
 
         org.getImages().removeAll(removedImages);
-//        removedImages.forEach(bannerImage ->  deleteOldImages(bannerImage));
+        deleteOldImages(removedImages);
 
         int sequence = 1;
         for (MultipartFile file : newFiles) {
@@ -120,8 +120,6 @@ public class HomeController {
         }
 
         bannerService.saveBanner(org);
-
-        BannerIamgeRepository.deleteAll(removedImages);
 
         return org;
     }
@@ -212,21 +210,19 @@ public class HomeController {
         result.put("data", tourDataList);
         return result;
     }
-    private void deleteOldImages(BannerGroup banner) {
-        if (banner.getImages() != null && !banner.getImages().isEmpty()) {
-            String uploadDir = "/home/user/Travel/BE/images/"; // Thay bằng đường dẫn thực tế
+    private void deleteOldImages(List<BannerImage> imageList) {
+        String uploadDir = "/home/user/Travel/BE/images/"; // Thay bằng đường dẫn thực tế
 
-            for (BannerImage image : banner.getImages()) {
-                String oldFileName = image.getImageUrl().replace("/images/", "");
-                File oldFile = new File(uploadDir + oldFileName);
+        for (BannerImage image : imageList) {
+            String oldFileName = image.getImageUrl().replace("/images/", "");
+            File oldFile = new File(uploadDir + oldFileName);
 
-                if (oldFile.exists() && !oldFile.delete()) {
-                    System.err.println("Failed to delete old image file: " + oldFileName);
-                }
+            if (oldFile.exists() && !oldFile.delete()) {
+                System.err.println("Failed to delete old image file: " + oldFileName);
             }
-
-            BannerIamgeRepository.deleteAll(banner.getImages()); // Xóa bản ghi ảnh trong DB
-            banner.getImages().clear(); // Xóa danh sách ảnh cũ trong entity
         }
+
+        BannerIamgeRepository.deleteAll(imageList); // Xóa bản ghi ảnh trong DB
+        imageList.clear();
     }
 }
