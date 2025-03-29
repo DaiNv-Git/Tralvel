@@ -14,13 +14,12 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
 
-
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")  // Áp dụng cho tất cả endpoint
-                .allowedOrigins("http://localhost:3081", "https://toditour.com/")
-                .allowedOrigins("*")  // React/Vue domain gọi lên
+                .allowedOrigins("http://localhost:3081", "https://toditour.com", "*") // Không ghi đè
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*");
     }
+
 }
