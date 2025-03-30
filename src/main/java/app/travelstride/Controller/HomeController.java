@@ -223,6 +223,5 @@ public class HomeController {
         }
 
         BannerIamgeRepository.deleteAll(imageList); // Xóa bản ghi ảnh trong DB
-        imageList.clear();
     }
 }
