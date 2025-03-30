@@ -72,13 +72,14 @@ public class ContinentController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateContinent(@PathVariable Long id,
                                              @RequestParam("continentName") String continentName,
+                                             @RequestParam("description") String description,
                                              @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
             Continents continent = continentRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Continent not found"));
 
             continent.setContinentName(continentName);
-
+            continent.setDescription(description);
             if (file != null && !file.isEmpty()) {
                 // Xử lý upload ảnh mới
                 String uploadDir =  "/home/user/Travel/BE/images/";
@@ -94,6 +95,7 @@ public class ContinentController {
                 // Cập nhật lại imageUrl
                 String imageUrl = "/images/" + fileName;
                 continent.setImageUrl(imageUrl);
+                
             }
 
             continentRepository.save(continent);
