@@ -366,7 +366,7 @@ public class TourController {
         tourData.put("styles", stylesRepository.findByTourIds(Collections.singletonList(id)));
         tourData.put("reviews", reviews);
         tourData.put("averageRatings", averageRatings);
-        tourData.put("logistics", logisticsRepository.findByTourId(id));
+        tourData.put("logistics", logisticsRepository.findFirstByTourId(id).orElseGet(Logistics::new));
         tourData.put("destinations", destinationRepository.findByTourId(id));
 
         List<Destination> destinations = destinationRepository.findByTourId(id);
@@ -404,7 +404,7 @@ public class TourController {
         tourData.put("activities", activityRepository.findByTourIds(Collections.singletonList(id)));
         tourData.put("interest", interestsRepository.findByTourIds(Collections.singletonList(id)));
         tourData.put("styles", stylesRepository.findByTourIds(Collections.singletonList(id)));
-        tourData.put("logistics", logisticsRepository.findByTourId(id));
+        tourData.put("logistics", logisticsRepository.findFirstByTourId(id).orElseGet(Logistics::new));
 
         // Lấy danh sách điểm đến (Destinations)
         List<Destination> destinations = destinationRepository.findByTourId(id);
