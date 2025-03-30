@@ -87,7 +87,7 @@ public class TourController {
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String createTour(
-            @RequestPart @Valid TourCreateRequest request,
+            @RequestPart("request") @Valid TourCreateRequest request,
             @RequestPart(required = false) MultipartFile[] images
     ) throws IOException {
         Tour savedTour = tourRepository.save(request.getTour());
