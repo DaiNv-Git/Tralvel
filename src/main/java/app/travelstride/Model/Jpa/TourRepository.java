@@ -78,6 +78,7 @@ public interface TourRepository  extends JpaRepository<Tour, Long> {
         OR LOWER(t.destinations) LIKE LOWER(CONCAT('%', :keyword, '%'))
         OR STR(t.id) LIKE LOWER(CONCAT('%', :keyword, '%'))
         OR LOWER(th.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        OR LOWER(t.tripType) LIKE LOWER(CONCAT('%', :keyword, '%'))
         OR LOWER(tr.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
         OR LOWER(act.activity) LIKE LOWER(CONCAT('%', :keyword, '%'))
         OR LOWER(i.name) LIKE LOWER(CONCAT('%', :keyword, '%'))

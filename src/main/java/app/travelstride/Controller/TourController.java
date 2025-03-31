@@ -464,7 +464,9 @@ public class TourController {
                 ));
 
         // Gom group theo tripType
+        Map<String, List<Map<String, Object>>> groupedByType = new HashMap<>();
         Map<String, List<Map<String, Object>>> groupedByTripType = new HashMap<>();
+        Map<String, Integer> typeCount = new HashMap<>();
         for (Tour tour : tours.getContent()) {
             Map<String, Object> tourData = new HashMap<>();
             tourData.put("tourInfo", tour);
@@ -473,6 +475,10 @@ public class TourController {
 
             String tripType = tour.getTripType() != null ? tour.getTripType() : "Unknown";
             groupedByTripType.computeIfAbsent(tripType, k -> new ArrayList<>()).add(tourData);
+
+            String type = tour.getTripType() != null ? tour.getTripType() : "Unknown";
+            groupedByType.computeIfAbsent(type, k -> new ArrayList<>()).add(tourData);
+            typeCount.put(type, typeCount.getOrDefault(type, 0) + 1);
         }
 
         // Build response
