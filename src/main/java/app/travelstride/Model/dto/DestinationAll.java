@@ -4,12 +4,17 @@ public class DestinationAll {
     private Long id;
     private String destination;
     private String continentName;
+    private Long continentId;
     private String imageUrl;
     private String description;
     private Boolean isShow;
 
     public Long getId() {
         return id;
+    }
+
+    public Long getContinentId() {
+        return continentId;
     }
 
     public void setId(Long id) {
@@ -56,12 +61,13 @@ public class DestinationAll {
         isShow = show;
     }
 
-    public DestinationAll(Long id, String destination, String continentName, String imageUrl, String description, Boolean isShow) {
+    public DestinationAll(Long id, String destination, String continentName, String imageUrl, String description, Boolean isShow, Long continentId) {
         this.id = id;
         this.destination = destination;
         this.continentName = continentName;
         this.imageUrl = imageUrl;
         this.description = description;
         this.isShow = isShow;
+        this.continentId = continentId;
     }
 }

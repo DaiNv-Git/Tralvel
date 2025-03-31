@@ -35,9 +35,44 @@ public class StylesController {
     }
 
     @PutMapping("/{id}")
-    public Styles update(@PathVariable Long id, @RequestBody Styles styles) {
-        return stylesService.update(id, styles);
+    public ResponseEntity<?> update(@PathVariable Long id,
+                                    @RequestParam("name") String name,
+                                    @RequestParam(value = "image", required = false) MultipartFile image) {
+        try {
+            Styles old = stylesRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Not found"));
+
+            old.setName(name);
+
+            if (image != null && !image.isEmpty()) {
+                String uploadDir = "uploads/images/";
+                File dir = new File(uploadDir);
+                // Xóa tất cả các tệp cũ trong thư mục
+                if (dir.exists()) {
+                    for (File subFile : dir.listFiles()) {
+                        if (subFile.isFile()) {
+                            subFile.delete();
+                        }
+                    }
+                } else {
+                    dir.mkdirs();
+                }
+
+                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                Path filePath = Paths.get(uploadDir, fileName);
+                Files.write(filePath, image.getBytes());
+
+                String imageUrl = "/images/" + fileName;
+                old.setImageUrl(imageUrl);
+            }
+
+            stylesRepository.save(old);
+            return ResponseEntity.ok(old);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update failed");
+        }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
@@ -48,17 +83,17 @@ public class StylesController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createStyle(@RequestParam("name") String name,
-                                         @RequestParam("file") MultipartFile file) {
+                                         @RequestParam("image") MultipartFile image) {
         try {
-            // Nên upload vào folder ngoài target/resources
+        
             String uploadDir = "uploads/images/";
             File dir = new File(uploadDir);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
             Path filePath = Paths.get(uploadDir, fileName);
-            Files.write(filePath, file.getBytes());
+            Files.write(filePath, image.getBytes());
 
 
             String imageUrl = "/images/" + fileName;
