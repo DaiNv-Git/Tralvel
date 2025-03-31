@@ -1,5 +1,6 @@
 package app.travelstride.Service;
 
+import app.travelstride.Config.CommonUpload;
 import app.travelstride.Model.Continents;
 import app.travelstride.Model.Destination;
 import app.travelstride.Model.Jpa.ContinentRepository;
@@ -28,6 +29,8 @@ public class DestinationService {
 
     @Autowired
     private ContinentRepository continentRepository;
+    @Autowired
+    private CommonUpload commonUpload;
 
     public List<Map<String, Object>> getAllDestinations() {
         List<Destination> destinations = destinationRepository.findAll();
@@ -67,7 +70,7 @@ public class DestinationService {
         dest.setContinentId(dto.getContinentId());
         dest.setDescription(dto.getDescription());
         dest.setShow(dto.getShow());
-
+        CommonUpload.deleteOldImage(dest.getImageUrl());
         if (image != null && !image.isEmpty()) {
             try {
                 String uploadDir = "/home/user/Travel/BE/images/";

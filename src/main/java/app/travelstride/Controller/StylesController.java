@@ -29,7 +29,8 @@ public class StylesController {
     private  StylesService stylesService;
     @Autowired
     private StylesRepository stylesRepository;
-
+    @Autowired
+    private CommonUpload commonUpload;
     @GetMapping
     public List<Styles> getAll() {
         return stylesService.getAll();
@@ -89,7 +90,7 @@ public class StylesController {
     public ResponseEntity<?> delete(@PathVariable Long id) {
         Styles old = stylesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Record not found with id: " + id));
-        CommonUpload.deleteOldImage(old.getImageUrl());
+        commonUpload.deleteOldImage(old.getImageUrl());
         stylesService.delete(id);
        
         return ResponseEntity.ok("Deleted");
