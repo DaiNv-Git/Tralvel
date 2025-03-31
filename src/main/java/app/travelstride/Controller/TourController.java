@@ -484,6 +484,7 @@ public class TourController {
         // Build response
         Map<String, Object> result = new HashMap<>();
         result.put("data", groupedByTripType);
+        result.put("typeCount", typeCount);
         result.put("currentPage", tours.getNumber());
         result.put("totalItems", tours.getTotalElements());
         result.put("totalPages", tours.getTotalPages());
