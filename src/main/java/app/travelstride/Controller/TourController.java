@@ -522,7 +522,10 @@ public class TourController {
             repository.saveAll(entities);
         }
     }
-
+    @GetMapping("/all")
+    public List<Tour> searchAllTours() {
+        return tourRepository.findAll();
+    }
 
 }
 
