@@ -172,7 +172,7 @@ public class TourController {
         return ResponseEntity.ok(response);
     }
 
-
+    @Transactional
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateTour(
             @PathVariable Long id,
