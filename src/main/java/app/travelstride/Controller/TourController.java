@@ -431,19 +431,18 @@ public class TourController {
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        // Gọi đúng repository sử dụng @Query bạn đã viết
         Page<Tour> tours = tourRepository.searchByKeyword(keyword, pageable);
 
         if (tours.isEmpty()) {
-            Map<String, Object> emptyResult = new HashMap<>();
-            emptyResult.put("data", Collections.emptyMap());
-            emptyResult.put("currentPage", page);
-            emptyResult.put("totalItems", 0);
-            emptyResult.put("totalPages", 0);
-            return ResponseEntity.ok(emptyResult);
+            return ResponseEntity.ok(Map.of(
+                    "data", Collections.emptyMap(),
+                    "currentPage", page,
+                    "totalItems", 0,
+                    "totalPages", 0
+            ));
         }
 
-        // Lấy ra danh sách tourId
+        // Lấy danh sách tourId
         List<Long> tourIds = tours.getContent().stream().map(Tour::getId).toList();
 
         // Lấy hình ảnh theo list tourId
@@ -463,35 +462,43 @@ public class TourController {
                         r -> r
                 ));
 
-        // Gom group theo tripType
-        Map<String, List<Map<String, Object>>> groupedByType = new HashMap<>();
-        Map<String, List<Map<String, Object>>> groupedByTripType = new HashMap<>();
-        Map<String, Integer> typeCount = new HashMap<>();
+        // Gom nhóm tour theo tripType
+        Map<String, Map<String, Object>> groupedByTripType = new HashMap<>();
+
         for (Tour tour : tours.getContent()) {
+            String tripType = tour.getTripType() != null ? tour.getTripType() : "Unknown";
+
             Map<String, Object> tourData = new HashMap<>();
             tourData.put("tourInfo", tour);
             tourData.put("images", imagesMap.getOrDefault(tour.getId(), new ArrayList<>()));
             tourData.put("reviewSummary", reviewsMap.getOrDefault(tour.getId(), new HashMap<>()));
 
-            String tripType = tour.getTripType() != null ? tour.getTripType() : "Unknown";
-            groupedByTripType.computeIfAbsent(tripType, k -> new ArrayList<>()).add(tourData);
+            // Nếu nhóm chưa tồn tại, tạo mới
+            groupedByTripType.putIfAbsent(tripType, new HashMap<>());
+            Map<String, Object> tripData = groupedByTripType.get(tripType);
 
-            String type = tour.getTripType() != null ? tour.getTripType() : "Unknown";
-            groupedByType.computeIfAbsent(type, k -> new ArrayList<>()).add(tourData);
-            typeCount.put(type, typeCount.getOrDefault(type, 0) + 1);
+            // Khởi tạo danh sách tour nếu chưa có
+            tripData.putIfAbsent("tours", new ArrayList<>());
+            List<Map<String, Object>> tourList = (List<Map<String, Object>>) tripData.get("tours");
+
+            // Thêm tour vào danh sách
+            tourList.add(tourData);
+
+            // Cập nhật số lượng tour
+            tripData.put("count", tourList.size());
         }
 
         // Build response
         Map<String, Object> result = new HashMap<>();
         result.put("data", groupedByTripType);
-        result.put("typeCount", typeCount);
         result.put("currentPage", tours.getNumber());
         result.put("totalItems", tours.getTotalElements());
         result.put("totalPages", tours.getTotalPages());
 
         return ResponseEntity.ok(result);
     }
-    
+
+
     @GetMapping("/trending")
     public ResponseEntity<List<Tour>> getTrendingTours() {
         List<Tour> trendingTours = tourService.getTrendingTours();
