@@ -139,6 +139,7 @@ public class TourController {
         }
         if (request.getLogistics() != null) {
             Logistics logistics = request.getLogistics();
+            logistics.setTourId(savedTour.getId());
             logisticsRepository.save(logistics);
         }
 
