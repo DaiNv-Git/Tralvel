@@ -137,6 +137,10 @@ public class TourController {
                     .collect(Collectors.toList());
             tourStyleRepository.saveAll(styles);
         }
+        if (request.getLogistics() != null) {
+            Logistics logistics = request.getLogistics();
+            logisticsRepository.save(logistics);
+        }
 
         if (request.getThemeIds() != null && request.getThemes() != null) {
             List<TourTheme> themeList = new ArrayList<>();
