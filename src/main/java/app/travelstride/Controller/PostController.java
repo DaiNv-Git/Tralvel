@@ -4,6 +4,7 @@ import app.travelstride.Model.Jpa.PostRepository;
 import app.travelstride.Model.Jpa.TypeRepository;
 import app.travelstride.Model.Post;
 import app.travelstride.Model.Type;
+import app.travelstride.Model.dto.PostCreateRequest;
 import app.travelstride.Model.dto.PostResponse;
 import app.travelstride.Service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,31 +52,30 @@ public class PostController {
     // ✅ Create
     @PostMapping("/create")
     public ResponseEntity<?> createPost(
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
-            @RequestParam("types") String types,
-            @RequestParam("cover") MultipartFile file) {
+            @RequestPart("data") PostCreateRequest postRequest,
+            @RequestPart("cover") MultipartFile file) {
 
         try {
+            // Tạo thư mục nếu chưa có
             String uploadDir = "/home/user/Travel/BE/images/";
             File dir = new File(uploadDir);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
 
-
+            // Lưu file ảnh
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(uploadDir, fileName);
             Files.write(filePath, file.getBytes());
 
-
+            // Tạo URL cho ảnh
             String imageUrl = "/images/" + fileName;
 
             // Lưu Post vào DB
             Post post = new Post();
-            post.setTitle(title);
-            post.setContentHtml(content);
-            post.setTypes(types);
+            post.setTitle(postRequest.getTitle());
+            post.setContentHtml(postRequest.getContent());
+            post.setTypes(postRequest.getTypes());
             post.setCoverImage(imageUrl);
             postRepository.save(post);
 
