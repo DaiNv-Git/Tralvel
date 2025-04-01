@@ -401,10 +401,10 @@ public class TourController {
         Map<String, Object> tourData = new HashMap<>();
         tourData.put("tour", tour);
         tourData.put("images", tourImageRepository.findImagesByTourIds(Collections.singletonList(id)));
-        tourData.put("themes", themeRepository.findByTourIds(Collections.singletonList(id)));
-        tourData.put("activities", activityRepository.findByTourIds(Collections.singletonList(id)));
-        tourData.put("interest", interestsRepository.findByTourIds(Collections.singletonList(id)));
-        tourData.put("styles", stylesRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("themeIds;", themeRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("activityIds", activityRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("interestIds", interestsRepository.findByTourIds(Collections.singletonList(id)));
+        tourData.put("styleIds", stylesRepository.findByTourIds(Collections.singletonList(id)));
         tourData.put("logistics", logisticsRepository.findFirstByTourId(id).orElseGet(Logistics::new));
 
         // Lấy danh sách điểm đến (Destinations)
@@ -417,7 +417,7 @@ public class TourController {
                         d.getImageUrl(),
                         d.getDescription()
                 )).collect(Collectors.toList());
-        tourData.put("destinations", destinationDTOs);
+        tourData.put("destinationIds", destinationDTOs);
 
         data.put("tourData", tourData);
         return data;
