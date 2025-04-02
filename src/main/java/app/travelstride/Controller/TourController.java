@@ -92,9 +92,6 @@ public class TourController {
     ) throws IOException {
         Tour savedTour = tourRepository.save(request.getTour());
 
-        if (request.getLogistics() != null) {
-            logisticsRepository.save(request.getLogistics());
-        }
 
         // ✅ Upload và lưu ảnh
         if (images != null && images.length > 0) {
@@ -115,7 +112,7 @@ public class TourController {
         }
 
 
-        if (request.getDestinationIds() != null) {
+        if (request.getActivityIds() != null) {
             List<Destination> destinations = destinationRepository.findAllById(request.getDestinationIds());
             List<TourDestination> tourDestinations = destinations.stream()
                     .map(destination -> new TourDestination(savedTour, destination))
@@ -514,7 +511,7 @@ public class TourController {
                 (id) -> new TourActivity(null, tourId, id), tourActivityRepository);
 
         updateRelation(tourId, dto.getDestinationIds(), tourDestinationRepository::deleteByTourId,
-                (id) -> new TourDestination(null, tourId, id), tourDestinationRepository);
+                (id) -> new TourDestination( tourId, id), tourDestinationRepository);
 
         updateRelation(tourId, dto.getInterestIds(), tourInterestsRepository::deleteByTourId,
                 (id) -> new TourInterests(null, tourId, id), tourInterestsRepository);

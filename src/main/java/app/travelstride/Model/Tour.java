@@ -301,6 +301,10 @@ public class Tour {
     public Tour() {
     }
 
+    public Tour(Long id) {
+        this.id = id;
+    }
+
     public Tour(Long id, String tripId, String name, String lodgingLevel, String tripType, String physicalLevel, String tripPace, String highlights, String tripAbout, String itineraryFocus, String groupSize, String ageRange, Integer minGroupSize, Integer maxGroupSize, String attractions, String destinations) {
         this.id = id;
         this.tripId = tripId;
