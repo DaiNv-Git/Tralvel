@@ -26,16 +26,22 @@ public class PostService {
         PostResponse response = new PostResponse();
         BeanUtils.copyProperties(post, response);
 
-        if (post.getTypes() != null) {
+        if (post.getTypes() != null && !post.getTypes().isEmpty()) {
             List<Long> typeIds = Arrays.stream(post.getTypes().split(","))
+                    .map(String::trim)
+                    .filter(s -> s.matches("\\d+"))
                     .map(Long::parseLong)
                     .toList();
-            List<String> typeNames = typeRepository.findAllById(typeIds)
-                    .stream()
-                    .map(Type::getName)
-                    .toList();
-            response.setTypeNames(typeNames);
+
+            if (!typeIds.isEmpty()) {
+                List<String> typeNames = typeRepository.findAllById(typeIds)
+                        .stream()
+                        .map(Type::getName)
+                        .toList();
+                response.setTypeNames(typeNames);
+            }
         }
+
         return response;
     }
 

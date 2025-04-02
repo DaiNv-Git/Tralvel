@@ -35,7 +35,9 @@ public class TourDestination {
         this.tour = tour;
         this.destination = destination;
     }
-    public TourDestination(Object o, Long id, Long did) {
+    public TourDestination(Long tourId, Long destinationId) {
+        this.tour = new Tour(tourId);
+        this.destination = new Destination(destinationId);
     }
 
 

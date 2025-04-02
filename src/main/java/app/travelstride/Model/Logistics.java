@@ -49,6 +49,27 @@ public class Logistics {
     @Lob
     private String cancellationPolicy;
 
+    public Logistics() {
+    }
+
+    public Logistics(Long id, Long tourId, String logistics, String accommodation, String transportation, String guides, String travelInsurance, String visaRequirements, String healthSafety, Integer mealsIncludedBreakfast, Integer mealsIncludedLunch, Integer ageMin, Integer ageMax, String additionalInfo, String cancellationPolicy) {
+        this.id = id;
+        this.tourId = tourId;
+        this.logistics = logistics;
+        this.accommodation = accommodation;
+        this.transportation = transportation;
+        this.guides = guides;
+        this.travelInsurance = travelInsurance;
+        this.visaRequirements = visaRequirements;
+        this.healthSafety = healthSafety;
+        this.mealsIncludedBreakfast = mealsIncludedBreakfast;
+        this.mealsIncludedLunch = mealsIncludedLunch;
+        this.ageMin = ageMin;
+        this.ageMax = ageMax;
+        this.additionalInfo = additionalInfo;
+        this.cancellationPolicy = cancellationPolicy;
+    }
+
     public Long getId() {
         return id;
     }
