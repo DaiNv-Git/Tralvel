@@ -86,7 +86,7 @@ public class TourController {
     private TourDestinationRepository tourDestinationRepository ;
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String createTour(
+    public String createTour(   
             @RequestPart("request") @Valid TourCreateRequest request,
             @RequestPart(required = false) MultipartFile[] images
     ) throws IOException {
@@ -176,73 +176,91 @@ public class TourController {
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateTour(
             @PathVariable Long id,
-            @RequestPart TourCreateRequest tourUpdateDTO,
+            @RequestPart("request") @Valid TourCreateRequest tourUpdateDTO,
             @RequestPart(required = false) MultipartFile[] images
     ) throws IOException {
-
-        // ✅ Kiểm tra tour tồn tại
         Tour existingTour = tourRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tour not found"));
-
-        // ✅ Cập nhật thông tin tour
+        
         Tour tour = tourUpdateDTO.getTour();
-        existingTour.setName(tour.getName());
-        existingTour.setTripId(tour.getTripId());
-        existingTour.setLodgingLevel(tour.getLodgingLevel());
-        existingTour.setTotalDay(tour.getTotalDay());
-        existingTour.setPrice(tour.getPrice());
-        existingTour.setOldPrice(tour.getOldPrice());
-        existingTour.setTripType(tour.getTripType());
-        existingTour.setPhysicalLevel(tour.getPhysicalLevel());
-        existingTour.setTripPace(tour.getTripPace());
-        existingTour.setHighlights(tour.getHighlights());
-        existingTour.setTripAbout(tour.getTripAbout());
-        existingTour.setFlyAndTransport(tour.getFlyAndTransport());
-        existingTour.setStartCity(tour.getStartCity());
-        existingTour.setEndCity(tour.getEndCity());
-        existingTour.setItineraryFocus(tour.getItineraryFocus());
-        existingTour.setGroupSize(tour.getGroupSize());
-        existingTour.setAgeRange(tour.getAgeRange());
-        existingTour.setMinGroupSize(tour.getMinGroupSize());
-        existingTour.setMaxGroupSize(tour.getMaxGroupSize());
-        existingTour.setAttractions(tour.getAttractions());
-        existingTour.setDestinations(tour.getDestinations());
-        existingTour.setIsTrending(tour.getIsTrending());
-
+        existingTour.updateFrom(tour); 
         tourRepository.save(existingTour);
-
-        // ✅ Update logistics
+        
         if (tourUpdateDTO.getLogistics() != null) {
             Logistics logistics = tourUpdateDTO.getLogistics();
             logistics.setTourId(id);
             logisticsRepository.save(logistics);
         }
 
-        // ✅ Update Images: Xoá cũ -> Thêm mới
+
         if (images != null && images.length > 0) {
             List<TourImage> oldImages = tourImageRepository.findByTourId(id);
             for (TourImage oldImage : oldImages) {
-                // Lấy URL ảnh cũ (ví dụ: /images/{fileName})
                 String imagePath = "/home/user/Travel/BE/images/" + oldImage.getUrl().replace("/images/", "");
                 File oldFile = new File(imagePath);
-                if (oldFile.exists()) {
-                    boolean isDeleted = oldFile.delete(); // Xóa ảnh trên ổ cứng
-                    if (!isDeleted) {
-                        throw new RuntimeException("Failed to delete old image file: " + oldImage.getUrl());
-                    }
+                if (oldFile.exists() && !oldFile.delete()) {
+                    throw new RuntimeException("Failed to delete old image file: " + oldImage.getUrl());
                 }
             }
             tourImageRepository.deleteByTourId(id);
-            List<TourImage> imageList = new ArrayList<>();
-            for (MultipartFile file : images) {
-                String url = commonUpload.saveImage(file);
-                imageList.add(new TourImage(null, id, url));
-            }
+
+            List<TourImage> imageList = Arrays.stream(images)
+                    .map(file -> {
+                        try {
+                            return new TourImage(null, id, commonUpload.saveImage(file));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .collect(Collectors.toList());
             tourImageRepository.saveAll(imageList);
+        }
+        
+        if (tourUpdateDTO.getActivityIds() != null) {
+            tourActivityRepository.deleteByTourId(id);
+            List<TourActivity> activities = tourUpdateDTO.getActivityIds().stream()
+                    .map(aid -> new TourActivity(null, id, aid))
+                    .collect(Collectors.toList());
+            tourActivityRepository.saveAll(activities);
         }
 
 
-        updateTourRelations(id, tourUpdateDTO);
+        if (tourUpdateDTO.getDestinationIds() != null) {
+            tourDestinationRepository.deleteByTourId(id);
+            List<Destination> destinations = destinationRepository.findAllById(tourUpdateDTO.getDestinationIds());
+            List<TourDestination> tourDestinations = destinations.stream()
+                    .map(destination -> new TourDestination(existingTour, destination))
+                    .collect(Collectors.toList());
+            tourDestinationRepository.saveAll(tourDestinations);
+        }
+
+
+        if (tourUpdateDTO.getInterestIds() != null) {
+            tourInterestsRepository.deleteByTourId(id);
+            List<TourInterests> interests = tourUpdateDTO.getInterestIds().stream()
+                    .map(iid -> new TourInterests(null, iid, id))
+                    .collect(Collectors.toList());
+            tourInterestsRepository.saveAll(interests);
+        }
+
+
+        if (tourUpdateDTO.getStyleIds() != null) {
+            tourStyleRepository.deleteByTourId(id);
+            List<TourStyle> styles = tourUpdateDTO.getStyleIds().stream()
+                    .map(sid -> new TourStyle(null, id, sid))
+                    .collect(Collectors.toList());
+            tourStyleRepository.saveAll(styles);
+        }
+
+
+        if (tourUpdateDTO.getThemeIds() != null && tourUpdateDTO.getThemes() != null) {
+            tourThemeRepository.deleteByTourId(id);
+            List<TourTheme> themeList = new ArrayList<>();
+            for (int i = 0; i < tourUpdateDTO.getThemeIds().size(); i++) {
+                themeList.add(new TourTheme(null, id, tourUpdateDTO.getThemes().get(i), tourUpdateDTO.getThemeIds().get(i)));
+            }
+            tourThemeRepository.saveAll(themeList);
+        }
 
         return ResponseEntity.ok("Tour updated successfully");
     }
@@ -504,38 +522,8 @@ public class TourController {
         List<Tour> trendingTours = tourService.getTrendingTours();
         return ResponseEntity.ok(trendingTours);
     }
-    private void updateTourRelations(Long tourId, TourCreateRequest dto) {
-        updateRelation(tourId, dto.getActivityIds(), tourActivityRepository::deleteByTourId,
-                (id) -> new TourActivity(null, tourId, id), tourActivityRepository);
-
-        updateRelation(tourId, dto.getDestinationIds(), tourDestinationRepository::deleteByTourId,
-                (id) -> new TourDestination(null, tourId, id), tourDestinationRepository);
-
-        updateRelation(tourId, dto.getInterestIds(), tourInterestsRepository::deleteByTourId,
-                (id) -> new TourInterests(null, tourId, id), tourInterestsRepository);
-
-        updateRelation(tourId, dto.getStyleIds(), tourStyleRepository::deleteByTourId,
-                (id) -> new TourStyle(null, tourId, id), tourStyleRepository);
-
-        updateRelation(tourId, dto.getThemeIds(), tourThemeRepository::deleteByTourId,
-                (id) -> new TourTheme(null, tourId, id), tourThemeRepository);
-    }
-
-    private <T> void updateRelation(
-            Long tourId,
-            List<Long> ids,
-            Consumer<Long> deleteFunction,
-            Function<Long, T> createFunction,
-            JpaRepository<T, Long> repository
-    ) {
-        if (ids != null) {
-            deleteFunction.accept(tourId);
-            List<T> entities = ids.stream()
-                    .map(createFunction)
-                    .collect(Collectors.toList());
-            repository.saveAll(entities);
-        }
-    }
+   
+  
     @GetMapping("/all")
     public List<Tour> searchAllTours() {
         return tourRepository.findAll();

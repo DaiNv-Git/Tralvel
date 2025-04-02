@@ -300,6 +300,30 @@ public class Tour {
 
     public Tour() {
     }
+    public void updateFrom(Tour tour) {
+        this.name = tour.getName();
+        this.tripId = tour.getTripId();
+        this.lodgingLevel = tour.getLodgingLevel();
+        this.totalDay = tour.getTotalDay();
+        this.price = tour.getPrice();
+        this.oldPrice = tour.getOldPrice();
+        this.tripType = tour.getTripType();
+        this.physicalLevel = tour.getPhysicalLevel();
+        this.tripPace = tour.getTripPace();
+        this.highlights = tour.getHighlights();
+        this.tripAbout = tour.getTripAbout();
+        this.flyAndTransport = tour.getFlyAndTransport();
+        this.startCity = tour.getStartCity();
+        this.endCity = tour.getEndCity();
+        this.itineraryFocus = tour.getItineraryFocus();
+        this.groupSize = tour.getGroupSize();
+        this.ageRange = tour.getAgeRange();
+        this.minGroupSize = tour.getMinGroupSize();
+        this.maxGroupSize = tour.getMaxGroupSize();
+        this.attractions = tour.getAttractions();
+        this.destinations = tour.getDestinations();
+        this.isTrending = tour.getIsTrending();
+    }
 
     public Tour(Long id, String tripId, String name, String lodgingLevel, String tripType, String physicalLevel, String tripPace, String highlights, String tripAbout, String itineraryFocus, String groupSize, String ageRange, Integer minGroupSize, Integer maxGroupSize, String attractions, String destinations) {
         this.id = id;

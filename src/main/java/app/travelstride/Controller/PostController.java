@@ -4,8 +4,10 @@ import app.travelstride.Model.Jpa.PostRepository;
 import app.travelstride.Model.Jpa.TypeRepository;
 import app.travelstride.Model.Post;
 import app.travelstride.Model.Type;
+import app.travelstride.Model.dto.PostRequest;
 import app.travelstride.Model.dto.PostResponse;
 import app.travelstride.Service.PostService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,31 +53,31 @@ public class PostController {
     // ✅ Create
     @PostMapping("/create")
     public ResponseEntity<?> createPost(
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
-            @RequestParam("types") String types,
-            @RequestParam("cover") MultipartFile file) {
-
+            @Valid @RequestPart PostRequest request,  
+            @RequestPart("cover") MultipartFile file  
+    ) {
         try {
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("Cover image is required");
+            }
+
+            // Lưu ảnh
             String uploadDir = "/home/user/Travel/BE/images/";
             File dir = new File(uploadDir);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
-
-
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(uploadDir, fileName);
             Files.write(filePath, file.getBytes());
 
-
             String imageUrl = "/images/" + fileName;
 
-            // Lưu Post vào DB
+            // Lưu bài viết
             Post post = new Post();
-            post.setTitle(title);
-            post.setContentHtml(content);
-            post.setTypes(types);
+            post.setTitle(request.getTitle());
+            post.setContentHtml(request.getContent());
+            post.setTypes(request.getTypes());
             post.setCoverImage(imageUrl);
             postRepository.save(post);
 
@@ -86,27 +88,46 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create post");
         }
     }
-
     // ✅ Update
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePost(@PathVariable Long id, @RequestBody Post post) {
+    public ResponseEntity<?> updatePost(
+            @PathVariable Long id,
+            @RequestPart("post") PostRequest request,  // 📌 Nhận JSON
+            @RequestPart(value = "cover", required = false) MultipartFile file // 📌 File ảnh (không bắt buộc)
+    ) {
         Optional<Post> optionalPost = postRepository.findById(id);
-        if (optionalPost.isPresent()) {
-            Post existingPost = optionalPost.get();
-
-            // Cập nhật từng trường nếu có
-            existingPost.setTitle(post.getTitle());
-            existingPost.setContentHtml(post.getContentHtml());
-            existingPost.setTypes(post.getTypes());
-            if (post.getCoverImage() != null) {
-                existingPost.setCoverImage(post.getCoverImage());
-            }
-
-            postRepository.save(existingPost);
-            return ResponseEntity.ok(existingPost);
-        } else {
+        if (optionalPost.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found");
         }
+
+        Post existingPost = optionalPost.get();
+
+        // Cập nhật thông tin từ JSON
+        existingPost.setTitle(request.getTitle());
+        existingPost.setContentHtml(request.getContent());
+        existingPost.setTypes(request.getTypes());
+
+        // Nếu có file ảnh mới, cập nhật
+        if (file != null && !file.isEmpty()) {
+            try {
+                String uploadDir = "/home/user/Travel/BE/images/";
+                File dir = new File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                Path filePath = Paths.get(uploadDir, fileName);
+                Files.write(filePath, file.getBytes());
+
+                existingPost.setCoverImage("/images/" + fileName);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update image");
+            }
+        }
+
+        postRepository.save(existingPost);
+        return ResponseEntity.ok(existingPost);
     }
 
 
