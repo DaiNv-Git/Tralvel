@@ -173,10 +173,10 @@ public class TourController {
     }
 
     @Transactional
-    @PutMapping("/update/{id}")
+    @PutMapping(value = "/update/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updateTour(
             @PathVariable Long id,
-            @RequestPart("request") @Valid TourCreateRequest tourUpdateDTO,
+            @RequestPart("tourUpdateDTO") @Valid TourCreateRequest tourUpdateDTO,
             @RequestPart(required = false) MultipartFile[] images
     ) throws IOException {
         Tour existingTour = tourRepository.findById(id)
