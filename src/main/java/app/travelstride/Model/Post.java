@@ -34,6 +34,14 @@ public class Post {
         this.publishDate = publishDate;
     }
 
+    public Boolean getShow() {
+        return isShow;
+    }
+
+    public void setShow(Boolean show) {
+        isShow = show;
+    }
+
     public Long getId() {
         return id;
     }
