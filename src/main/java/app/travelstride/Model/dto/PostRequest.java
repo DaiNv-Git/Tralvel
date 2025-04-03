@@ -9,7 +9,6 @@ public class PostRequest {
     private String title;
 
     @NotBlank
-    @Size(max = 5000, message = "Content cannot exceed 5000 characters")
     private String content;
 
     @NotBlank
