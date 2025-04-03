@@ -14,7 +14,7 @@ public class PostResponse {
     private LocalDate publishDate;
     private String types; // "1,2,3"
     private List<String> typeNames; // ["Tin tức", "Thông báo"]
-    private Boolean isShow; // ["Tin tức", "Thông báo"]
+    private Boolean isShow;
 
     public Boolean getIsShow() {
         return isShow;
