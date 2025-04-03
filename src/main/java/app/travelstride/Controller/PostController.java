@@ -79,6 +79,7 @@ public class PostController {
             post.setContentHtml(request.getContent());
             post.setTypes(request.getTypes());
             post.setCoverImage(imageUrl);
+            post.setIsShow(request.isShow());
             postRepository.save(post);
 
             return ResponseEntity.ok("Post created successfully!");
@@ -106,7 +107,7 @@ public class PostController {
         existingPost.setTitle(request.getTitle());
         existingPost.setContentHtml(request.getContent());
         existingPost.setTypes(request.getTypes());
-
+        existingPost.setIsShow(request.isShow());
         // Nếu có file ảnh mới, cập nhật
         if (file != null && !file.isEmpty()) {
             try {

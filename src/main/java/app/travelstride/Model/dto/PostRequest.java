@@ -15,6 +15,16 @@ public class PostRequest {
     @Size(max = 100, message = "Types cannot exceed 100 characters")
     private String types;
 
+    private boolean isShow;
+
+    public boolean isShow() {
+        return isShow;
+    }
+
+    public void setShow(boolean show) {
+        isShow = show;
+    }
+
     public String getTitle() {
         return title;
     }
