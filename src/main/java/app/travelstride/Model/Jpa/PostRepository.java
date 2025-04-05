@@ -18,4 +18,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> search(@Param("keyword") String keyword, @Param("typeId") String typeId, Pageable pageable);
 
     List<Post> findByIsShow(boolean isShow);
+
+    Page<Post> findByIsShowTrue(Pageable pageable);
+
 }

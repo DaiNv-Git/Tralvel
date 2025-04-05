@@ -62,5 +62,15 @@ public class PostService {
 
         return new PageImpl<>(content, pageable, filtered.size());
     }
+    public Page<PostResponse> getPopularPosts(Pageable pageable) {
+        Page<Post> postPage = postRepository.findByIsShowTrue(pageable);
+
+        List<PostResponse> content = postPage.getContent().stream()
+                .map(this::mapToResponse)
+                .toList();
+
+        return new PageImpl<>(content, pageable, postPage.getTotalElements());
+    }
+
 }
 

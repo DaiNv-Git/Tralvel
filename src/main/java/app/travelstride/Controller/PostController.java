@@ -137,6 +137,14 @@ public class PostController {
     public void delete(@PathVariable Long id) {
         postRepository.deleteById(id);
     }
+    
+    @GetMapping("/popular-posts")
+    public Page<PostResponse> getPopularPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return postService.getPopularPosts(PageRequest.of(page, size));
+    }
 
 
 }
