@@ -14,15 +14,9 @@ public class PostResponse {
     private LocalDate publishDate;
     private String types; // "1,2,3"
     private List<String> typeNames; // ["Tin tức", "Thông báo"]
-    private Boolean isShow;
+    private Boolean show;
 
-    public Boolean getIsShow() {
-        return isShow;
-    }
-
-    public void setIsShow(Boolean isShow) {
-        this.isShow = isShow;
-    }
+ 
 
     public Long getId() {
         return id;

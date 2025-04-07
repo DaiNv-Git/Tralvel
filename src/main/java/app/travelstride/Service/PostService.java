@@ -25,7 +25,7 @@ public class PostService {
     public PostResponse mapToResponse(Post post) {
         PostResponse response = new PostResponse();
         BeanUtils.copyProperties(post, response);
-        response.setIsShow(post.getIsShow());
+        response.setShow(post.getIsShow());
 
         if (post.getTypes() != null && !post.getTypes().isEmpty()) {
             List<Long> typeIds = Arrays.stream(post.getTypes().split(","))
