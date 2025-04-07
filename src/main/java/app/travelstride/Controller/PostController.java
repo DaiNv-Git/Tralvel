@@ -13,13 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -46,7 +43,7 @@ public class PostController {
         return postService.searchPosts(keyword, typeId, PageRequest.of(page, size));
     }
 
-    // ✅ Create
+  
     @PostMapping("/create")
     public ResponseEntity<?> createPost(
             @RequestPart("post")  PostRequest request,  
@@ -56,8 +53,7 @@ public class PostController {
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body("Cover image is required");
             }
-
-            // Lưu ảnh
+            
             String uploadDir = "/home/user/Travel/BE/images/";
             File dir = new File(uploadDir);
             if (!dir.exists()) {
