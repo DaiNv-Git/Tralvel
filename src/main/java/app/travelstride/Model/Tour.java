@@ -316,6 +316,7 @@ public class Tour {
         this.startCity = tour.getStartCity();
         this.endCity = tour.getEndCity();
         this.itineraryFocus = tour.getItineraryFocus();
+        this.itinerary = tour.getItinerary();
         this.groupSize = tour.getGroupSize();
         this.ageRange = tour.getAgeRange();
         this.minGroupSize = tour.getMinGroupSize();
