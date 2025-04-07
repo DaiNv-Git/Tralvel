@@ -32,9 +32,9 @@ jobs:
             fi
 
             echo "== Restart travel-app using PM2 =="
-            pm2 stop travel-app || true
+            
 
-            pm2 restart travel-app
+            pm2 restart java
 
       - name: Notify Telegram Success
         run: |
