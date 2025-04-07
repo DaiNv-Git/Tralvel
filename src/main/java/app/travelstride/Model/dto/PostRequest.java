@@ -17,7 +17,7 @@ public class PostRequest {
 
     private Boolean isShow;
 
-    public Boolean isShow() {
+    public Boolean getShow() {
         return isShow;
     }
 
