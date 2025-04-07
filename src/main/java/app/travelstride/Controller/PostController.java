@@ -1,9 +1,7 @@
 package app.travelstride.Controller;
 
 import app.travelstride.Model.Jpa.PostRepository;
-import app.travelstride.Model.Jpa.TypeRepository;
 import app.travelstride.Model.Post;
-import app.travelstride.Model.Type;
 import app.travelstride.Model.dto.PostRequest;
 import app.travelstride.Model.dto.PostResponse;
 import app.travelstride.Service.PostService;
@@ -11,8 +9,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +49,7 @@ public class PostController {
     // ✅ Create
     @PostMapping("/create")
     public ResponseEntity<?> createPost(
-            @Valid @RequestPart PostRequest request,  
+            @RequestPart("post")  PostRequest request,  
             @RequestPart("cover") MultipartFile file  
     ) {
         try {
@@ -93,8 +89,8 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePost(
             @PathVariable Long id,
-            @RequestPart("post") PostRequest request,  // 📌 Nhận JSON
-            @RequestPart(value = "cover", required = false) MultipartFile file // 📌 File ảnh (không bắt buộc)
+            @RequestPart("post") PostRequest request,
+            @RequestPart(value = "cover", required = false) MultipartFile file 
     ) {
         Optional<Post> optionalPost = postRepository.findById(id);
         if (optionalPost.isEmpty()) {
