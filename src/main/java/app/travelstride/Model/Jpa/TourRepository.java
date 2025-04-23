@@ -88,7 +88,11 @@ public interface TourRepository  extends JpaRepository<Tour, Long> {
 """)
     Page<Tour> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
+    List<Tour> findByDestinationsContaining(String destinationName);
+
 
     List<Tour> findByIsTrending(Integer isTrending);
     Page<Tour> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    
+    
 }

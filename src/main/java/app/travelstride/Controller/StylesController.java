@@ -2,7 +2,12 @@ package app.travelstride.Controller;
 
 import app.travelstride.Config.CommonUpload;
 import app.travelstride.Model.Jpa.StylesRepository;
+import app.travelstride.Model.Jpa.TourDestinationRepository;
+import app.travelstride.Model.Jpa.TourRepository;
+import app.travelstride.Model.Jpa.TourStyleRepository;
 import app.travelstride.Model.Styles;
+import app.travelstride.Model.Tour;
+import app.travelstride.Model.TourStyle;
 import app.travelstride.Service.StylesService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/styles")
@@ -28,7 +34,13 @@ public class StylesController {
     @Autowired
     private  StylesService stylesService;
     @Autowired
+    private TourRepository tourRepository;
+    @Autowired
+    private TourStyleRepository tourStyleRepository;
+    @Autowired
     private StylesRepository stylesRepository;
+    @Autowired
+    private TourDestinationRepository tourDestinationRepository;
     @Autowired
     private CommonUpload commonUpload;
     @GetMapping
@@ -127,5 +139,22 @@ public class StylesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed");
         }
     }
- 
+
+    @GetMapping("/styles")
+    public List<Styles> getStylesByDestination(@RequestParam String destinationName) {
+        return getStylesByDestinationName(destinationName);
+    }
+    public List<Styles> getStylesByDestinationName(String destinationName) {
+        // Tìm các Tour với destinationName
+        List<Tour> tours = tourDestinationRepository.findToursByDestinationName(destinationName);
+
+        // Lấy tất cả các Style tương ứng với các Tour đó
+        List<Long> tourIds = tours.stream().map(Tour::getId).collect(Collectors.toList());
+        List<TourStyle> tourStyles = tourStyleRepository.findByTourIdIn(tourIds);
+
+        // Lấy các Style từ các TourStyle
+        List<Long> styleIds = tourStyles.stream().map(TourStyle::getStyleId).collect(Collectors.toList());
+        return stylesRepository.findAllById(styleIds);
+    }
+    
 }

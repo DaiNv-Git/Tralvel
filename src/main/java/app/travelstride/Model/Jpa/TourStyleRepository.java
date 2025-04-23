@@ -10,4 +10,7 @@ import java.util.List;
 public interface TourStyleRepository   extends JpaRepository<TourStyle, Long> {
     void deleteByTourId(Long tourId);
     List<TourStyle> findByTourId(Long id);
+
+    List<TourStyle> findByTourIdIn(List<Long> tourIds);
+
 }

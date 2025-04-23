@@ -482,6 +482,7 @@ public class TourController {
 
         // Gom nhóm tour theo tripType
         Map<String, Map<String, Object>> groupedByTripType = new HashMap<>();
+        Map<String, List<Map<String, Object>>> groupedByStyle = new HashMap<>();
 
         for (Tour tour : tours.getContent()) {
             String tripType = tour.getTripType() != null ? tour.getTripType() : "Unknown";
@@ -501,8 +502,7 @@ public class TourController {
 
             // Thêm tour vào danh sách
             tourList.add(tourData);
-
-            // Cập nhật số lượng tour
+            
             tripData.put("count", tourList.size());
         }
 
