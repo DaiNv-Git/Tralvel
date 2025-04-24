@@ -1,6 +1,7 @@
 package app.travelstride.Controller;
 
 import app.travelstride.Model.dto.TopAttractionDTO;
+import app.travelstride.Model.dto.TopAttractionRequest;
 import app.travelstride.Service.TopDestinationAttractionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,16 +37,15 @@ public class TopDestinationAttractionController {
 
     @PostMapping
     public TopAttractionDTO create(
-            @RequestParam Long destinationId,
-            @RequestParam String content) {
-        return service.mapToDTO(service.create(destinationId, content));
+           @RequestBody TopAttractionRequest topAttractionRequest) {
+        return service.mapToDTO(service.create(topAttractionRequest.getDestinationId(), topAttractionRequest.getContent()));
     }
 
     @PutMapping("/{id}")
     public TopAttractionDTO updateAttraction(
             @PathVariable Long id,
-            @RequestBody String content) {
-        return service.mapToDTO(service.update(id, content));
+            @RequestBody TopAttractionRequest topAttractionRequest) {
+        return service.mapToDTO(service.update(id, topAttractionRequest.getContent(),topAttractionRequest.getDestinationId()));
     }
 
     @GetMapping("/by-destination")

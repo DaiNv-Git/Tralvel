@@ -40,10 +40,13 @@ public class TopDestinationAttractionService {
         return repository.save(tda);
     }
 
-    public TopDestinationAttraction update(Long id, String content) {
+    public TopDestinationAttraction update(Long id, String content, Long destinationId) {
         TopDestinationAttraction tda = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Top attraction not found"));
         tda.setContent(content);
+        Destination destination = destinationRepository.findById(destinationId)
+                .orElseThrow(() -> new RuntimeException("Destination not found"));
+        tda.setDestination(destination);
         return repository.save(tda);
     }
 

@@ -24,7 +24,9 @@ import java.nio.file.Files;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -141,10 +143,11 @@ public class StylesController {
     }
 
     @GetMapping("/styles")
-    public List<Styles> getStylesByDestination(@RequestParam String destinationName) {
+    public Set<Styles> getStylesByDestination(@RequestParam String destinationName) {
         return getStylesByDestinationName(destinationName);
     }
-    public List<Styles> getStylesByDestinationName(String destinationName) {
+
+    public Set<Styles> getStylesByDestinationName(String destinationName) {
         // Tìm các Tour với destinationName
         List<Tour> tours = tourDestinationRepository.findToursByDestinationName(destinationName);
 
@@ -154,7 +157,10 @@ public class StylesController {
 
         // Lấy các Style từ các TourStyle
         List<Long> styleIds = tourStyles.stream().map(TourStyle::getStyleId).collect(Collectors.toList());
-        return stylesRepository.findAllById(styleIds);
+
+        // Dùng Set để loại bỏ các phần tử trùng lặp
+        return new HashSet<>(stylesRepository.findAllById(styleIds));
     }
-    
+
+
 }
